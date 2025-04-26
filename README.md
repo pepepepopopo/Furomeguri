@@ -1,3 +1,6 @@
+◽️画面遷移図リンク
+Figma：https://www.figma.com/design/6uGxQ5lEgW61YQVW6O0t5u/Furomeguri?node-id=0-1&t=xkYWUInvvAzlEafK-1
+
 ■サービス概要
 Furomeguriは温泉旅行に特化した行先選定と旅程作成が可能な旅行アプリです。
 ユーザーは温泉施設、周辺施設を比較し、旅程をたてることができます。
