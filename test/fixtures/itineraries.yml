@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  itinerariy_block: one
+  title: MyText
+  subtitle: MyText
+
+two:
+  user: two
+  itinerariy_block: two
+  title: MyText
+  subtitle: MyText
