@@ -1,0 +1,9 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  google_place_id: MyText
+  name: MyText
+
+two:
+  google_place_id: MyText
+  name: MyText
