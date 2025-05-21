@@ -3,12 +3,19 @@
 <script>
 let map
 
+// const locationData = [
+//   { name: "草津温泉" lat: 36.62303436838449, lng:138.59697281955727 },
+//   { name: "箱根温泉" lat: 35.24343940136944, lng:139.0202909532175 },
+//   { name: "別府温泉" lat: 33.31614938103781, lng:131.47085516768604 },
+//   { name: "下呂温泉" lat: 35.80783558290318, lng:137.2417343342305 },
+// ]
+
 function initMap(){
   geocoder = new google.maps.Geocoder()
 
   map = new google.maps.Map(document.getElementById('map'), {
     center: {lat: 35.68125718370711, lng:139.7665076889907},
-    zoom: 13,
+    zoom: 6,
   });
 
   marker = new google.maps.Marker({
@@ -16,5 +23,6 @@ function initMap(){
     map: map
   });
 }
+
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_MAP_API_KEY'] %>&callback=initMap" async defer></script>
