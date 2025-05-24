@@ -12,40 +12,36 @@ defer
 let map;
 
 const locations = [
-  { name: "草津温泉", lat: 36.62303436838449, lng:138.59697281955727 },
-  { name: "箱根温泉", lat: 35.24343940136944, lng:139.0202909532175 },
-  { name: "別府温泉", lat: 33.31614938103781, lng:131.47085516768604 },
-  { name: "下呂温泉", lat: 35.80783558290318, lng:137.2417343342305 },
-  { name: "熱海温泉", lat: 35.099323, lng: 139.077021 },
-  { name: "有馬温泉", lat: 34.796697, lng: 135.248605 },
-  { name: "道後温泉", lat: 33.852328, lng: 132.785225 },
-  { name: "登別温泉", lat: 42.495801, lng: 141.147003 },
-  { name: "由布院温泉", lat: 33.263889, lng: 131.359722 },
+  { name: "草津", lat: 36.62303436838449, lng:138.59697281955727 },
+  { name: "箱根", lat: 35.24343940136944, lng:139.0202909532175 },
+  { name: "別府", lat: 33.31614938103781, lng:131.47085516768604 },
+  { name: "下呂", lat: 35.80783558290318, lng:137.2417343342305 },
+  { name: "熱海", lat: 35.099323, lng: 139.077021 },
+  { name: "有馬", lat: 34.796697, lng: 135.248605 },
+  { name: "道後", lat: 33.852328, lng: 132.785225 },
+  { name: "登別", lat: 42.495801, lng: 141.147003 },
+  { name: "由布院", lat: 33.263889, lng: 131.359722 },
 ]
 
 async function initMap() {
   const { Map } = await google.maps.importLibrary("maps");
-  const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
-  map = new Map(document.getElementById("map"), {
+  const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
+  const glyphImg = document.createElement("img");
+    map = new Map(document.getElementById("map"), {
     center: {lat: 35.68125718370711, lng:139.7665076889907},
     zoom: 6,
     mapId: 'DEMO_MAP_ID',
   });
 
   locations.map(location => {
+    const pinCustom = new PinElement({
+      glyphColor: 'white',
+    });
     const marker = new AdvancedMarkerElement({
       map: map,
       position: {lat: location.lat, lng: location.lng },
+      content: pinCustom.element,
     });
   });
-  // const markers = locations.map(location => {
-  //   const marker = new google.maps.Marker({
-  //     position: {lat: location.lat, lng: location.lng },
-  //     label: location.name
-  //   });
-  // });
-  // return marker;
-
-
 };
 </script>
