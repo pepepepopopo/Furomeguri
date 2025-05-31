@@ -1,12 +1,82 @@
+<div class="relative h-screen w-screen">
+<div class="relative h-screen w-screen">
+  <form class="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 w-3/4 px-4">
+    <div class="flex space-x-2">
+
+      <div class="relative dropdown-container">
+        <button type="button" class="dropdown-button py-2.5 px-4 bg-gray-100 border border-gray-300 rounded-lg text-sm">
+          カテゴリ1 ▼
+        </button>
+        <div class="dropdown-menu hidden absolute mt-1 w-44 bg-white rounded-lg shadow z-20">
+          <ul class="text-sm text-gray-700">
+            <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">選択肢1</button></li>
+            <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">選択肢2</button></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="relative dropdown-container">
+        <button type="button" class="dropdown-button py-2.5 px-4 bg-gray-100 border border-gray-300 rounded-lg text-sm">
+          カテゴリ2 ▼
+        </button>
+        <div class="dropdown-menu hidden absolute mt-1 w-44 bg-white rounded-lg shadow z-20">
+          <ul class="text-sm text-gray-700">
+            <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">選択肢A</button></li>
+            <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">選択肢B</button></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="relative dropdown-container">
+        <button type="button" class="dropdown-button py-2.5 px-4 bg-gray-100 border border-gray-300 rounded-lg text-sm">
+          カテゴリ3 ▼
+        </button>
+        <div class="dropdown-menu hidden absolute mt-1 w-44 bg-white rounded-lg shadow z-20">
+          <ul class="text-sm text-gray-700">
+            <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">選択肢X</button></li>
+            <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">選択肢Y</button></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 検索ボックス -->
+      <div class="relative w-full">
+        <input type="search" class="block p-2.5 w-full text-sm bg-gray-50 border border-gray-300 rounded-lg" placeholder="検索..." required />
+        <button type="submit" class="absolute top-0 end-0 p-2.5 text-white bg-blue-700 rounded-r-lg hover:bg-blue-800">
+          🔍
+        </button>
+      </div>
+
+    </div>
+  </form>
+</div>
+
+
+  <div class="absolute inset-0 z-0" id='map'></div>
+</div>
+
+<script>
+  document.addEventListener('click', (e) => {
+    const isDropdownButton = e.target.closest('.dropdown-button');
+    const containers = document.querySelectorAll('.dropdown-container');
+
+    containers.forEach(container => {
+      const menu = container.querySelector('.dropdown-menu');
+      if (container.contains(e.target) && isDropdownButton) {
+        menu.classList.toggle('hidden');
+      } else {
+        menu.classList.add('hidden');
+      }
+    });
+  });
+</script>
+
 <!-- Google Maps API -->
 <script
 src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_MAP_API_KEY'] %>&callback=initMap&v=weekly&libraries=marker"
-defer
-></script>
+defer></script>
 <!-- MarkerClusterer CDN -->
 <script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
-
-<div class="w-full h-screen" id='map'></div>
 
 <script>
 let map;
