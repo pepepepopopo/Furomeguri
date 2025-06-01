@@ -60,16 +60,37 @@
 // ドロップダウンメソッド
   document.addEventListener('click', (e) => {
     const isDropdownButton = e.target.closest('.dropdown-button');
+    const isMenuItem = e.target.closest('.dropdown-menu button');
     const containers = document.querySelectorAll('.dropdown-container');
 
     containers.forEach(container => {
       const menu = container.querySelector('.dropdown-menu');
-      if (container.contains(e.target) && isDropdownButton) {
-        menu.classList.toggle('hidden');
-      } else {
+      const button = container.querySelector('.dropdown-button');
+
+      if (container.contains(e.target)) {
+        if(isDropdownButton) {
+          menu.classList.toggle('hidden');
+        } else if(isMenuItem) {
+          button.textContent = e.target.textContent;
+          menu.classList.add('hidden');
+        }
+      }else {
         menu.classList.add('hidden');
       }
     });
+
+    // const dropdownMenu = clickedItem.closest('.dropdown-menu');
+    // const container = document.querySelectorAll('.dropdown-container');
+    // const dropdownButton = document.querySelectorAll('.dropdown-button');
+
+    // container.forEach(container => {
+    //   const menu = container.querySelector('.dropdown-menu');
+    //   if (container.contains(e.target) && dropdownMenu) {
+    //     menu.classList.toggle('hidden');
+    //   } else {
+    //     menu.classList.add('hidden');
+    //   }
+    // });
   });
 </script>
 
