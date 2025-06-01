@@ -1,57 +1,56 @@
 <div class="relative h-screen w-screen">
-<div class="relative h-screen w-screen">
-  <form class="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 w-3/4 px-4">
-    <div class="flex space-x-2">
-      <div class="relative dropdown-container">
-        <button type="button" class="dropdown-button py-2.5 px-4 bg-gray-100 border border-gray-300 rounded-lg text-sm">
-          温泉地
-        </button>
-        <div class="dropdown-menu hidden absolute mt-1 w-44 bg-white rounded-lg shadow z-20">
-          <ul class="text-sm text-gray-700">
-            <% @default_locations.each do |default_location| %>
-              <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">
-                <%= default_location.name %></button>
-              </li>
-            <% end %>
-          </ul>
+  <div class="relative h-screen w-screen">
+    <form class="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 w-3/4 px-4">
+      <div class="flex space-x-2">
+        <div class="relative dropdown-container">
+          <button type="button" class="dropdown-button py-2.5 px-4 bg-gray-100 border border-gray-300 rounded-lg text-sm">
+            温泉地
+          </button>
+          <div class="dropdown-menu hidden absolute mt-1 w-44 bg-white rounded-lg shadow z-20">
+            <ul class="text-sm text-gray-700">
+              <% @default_locations.each do |default_location| %>
+                <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">
+                  <%= default_location.name %></button>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+
+        <div class="relative dropdown-container">
+          <button type="button" class="dropdown-button py-2.5 px-4 bg-gray-100 border border-gray-300 rounded-lg text-sm">
+            どちらも
+          </button>
+          <div class="dropdown-menu hidden absolute mt-1 w-44 bg-white rounded-lg shadow z-20">
+            <ul class="text-sm text-gray-700">
+              <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">ホテル</button></li>
+              <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">旅館</button></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="relative dropdown-container">
+          <button type="button" class="dropdown-button py-2.5 px-4 bg-gray-100 border border-gray-300 rounded-lg text-sm">
+            どちらも
+          </button>
+          <div class="dropdown-menu hidden absolute mt-1 w-44 bg-white rounded-lg shadow z-20">
+            <ul class="text-sm text-gray-700">
+              <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">飲食店</button></li>
+              <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">観光地</button></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 検索ボックス -->
+        <div class="relative w-full">
+          <input type="search" class="block p-2.5 w-full text-sm bg-gray-50 border border-gray-300 rounded-lg" placeholder="検索..." required />
+          <button type="submit" class="absolute top-0 end-0 p-2.5 text-white bg-blue-700 rounded-r-lg hover:bg-blue-800">
+            🔍
+          </button>
         </div>
       </div>
-
-      <div class="relative dropdown-container">
-        <button type="button" class="dropdown-button py-2.5 px-4 bg-gray-100 border border-gray-300 rounded-lg text-sm">
-          すべて含む
-        </button>
-        <div class="dropdown-menu hidden absolute mt-1 w-44 bg-white rounded-lg shadow z-20">
-          <ul class="text-sm text-gray-700">
-            <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">選択肢A</button></li>
-            <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">選択肢B</button></li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="relative dropdown-container">
-        <button type="button" class="dropdown-button py-2.5 px-4 bg-gray-100 border border-gray-300 rounded-lg text-sm">
-          すべて含む
-        </button>
-        <div class="dropdown-menu hidden absolute mt-1 w-44 bg-white rounded-lg shadow z-20">
-          <ul class="text-sm text-gray-700">
-            <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">選択肢X</button></li>
-            <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">選択肢Y</button></li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- 検索ボックス -->
-      <div class="relative w-full">
-        <input type="search" class="block p-2.5 w-full text-sm bg-gray-50 border border-gray-300 rounded-lg" placeholder="検索..." required />
-        <button type="submit" class="absolute top-0 end-0 p-2.5 text-white bg-blue-700 rounded-r-lg hover:bg-blue-800">
-          🔍
-        </button>
-      </div>
-    </div>
-  </form>
-</div>
-
+    </form>
+  </div>
 
   <div class="absolute inset-0 z-0" id='map'></div>
 </div>
@@ -78,19 +77,6 @@
         menu.classList.add('hidden');
       }
     });
-
-    // const dropdownMenu = clickedItem.closest('.dropdown-menu');
-    // const container = document.querySelectorAll('.dropdown-container');
-    // const dropdownButton = document.querySelectorAll('.dropdown-button');
-
-    // container.forEach(container => {
-    //   const menu = container.querySelector('.dropdown-menu');
-    //   if (container.contains(e.target) && dropdownMenu) {
-    //     menu.classList.toggle('hidden');
-    //   } else {
-    //     menu.classList.add('hidden');
-    //   }
-    // });
   });
 </script>
 
@@ -120,7 +106,6 @@ async function initMap() {
   // マップの表示設定
   const { Map } = await google.maps.importLibrary("maps");
   const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
-  const glyphImg = document.createElement("img");
     map = new Map(document.getElementById("map"), {
     center: {lat: 35.68125718370711, lng:139.7665076889907},
     zoom: 6,
