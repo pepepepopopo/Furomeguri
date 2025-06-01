@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: furomeguri-web
+    env: ruby
+    region: singapore
+    buildCommand: "./render-build.sh"
+    startCommand: "bundle exec puma -C config/puma.rb"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: Furomeguri
+          property: connectionString
+      - key: RAILS_ENV
+        value: production
+      - key: RAILS_MASTER_KEY
+        sync: false  # あとで手動で設定する必要があります（renderのUIで）
+
+databases:
+  - name: Furomeguri
+    databaseName: furomeguri
+    user: furomeguri_user
+    plan: free
+    region: singapore
+    postgresMajorVersion: "16"
+    ipAllowList:
+      - source: 0.0.0.0/0
+        description: allow all
