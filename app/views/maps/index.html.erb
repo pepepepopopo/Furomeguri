@@ -4,12 +4,15 @@
     <div class="flex space-x-2">
       <div class="relative dropdown-container">
         <button type="button" class="dropdown-button py-2.5 px-4 bg-gray-100 border border-gray-300 rounded-lg text-sm">
-          すべて含む
+          温泉地
         </button>
         <div class="dropdown-menu hidden absolute mt-1 w-44 bg-white rounded-lg shadow z-20">
           <ul class="text-sm text-gray-700">
-            <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">選択肢1</button></li>
-            <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">選択肢2</button></li>
+            <% @default_locations.each do |default_location| %>
+              <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">
+                <%= default_location.name %></button>
+              </li>
+            <% end %>
           </ul>
         </div>
       </div>
@@ -54,6 +57,7 @@
 </div>
 
 <script>
+// ドロップダウンメソッド
   document.addEventListener('click', (e) => {
     const isDropdownButton = e.target.closest('.dropdown-button');
     const containers = document.querySelectorAll('.dropdown-container');
@@ -78,20 +82,21 @@ defer></script>
 
 <script>
 let map;
+let locations = [];
 
-const locations = [
-  { name: "草津", lat: 36.62303436838449, lng:138.59697281955727 },
-  { name: "箱根", lat: 35.24343940136944, lng:139.0202909532175 },
-  { name: "別府", lat: 33.31614938103781, lng:131.47085516768604 },
-  { name: "下呂", lat: 35.80783558290318, lng:137.2417343342305 },
-  { name: "熱海", lat: 35.099323, lng: 139.077021 },
-  { name: "有馬", lat: 34.796697, lng: 135.248605 },
-  { name: "道後", lat: 33.852328, lng: 132.785225 },
-  { name: "登別", lat: 42.495801, lng: 141.147003 },
-  { name: "由布院", lat: 33.263889, lng: 131.359722 },
-]
+// API経由でdefault_locationsから温泉地一覧取得
+const fetchDefaultLocations = async () => {
+  const response = await fetch("/api/default_locations");
+  const data = await response.json();
+  return data.map(default_location => ({
+    name: default_location.name,
+    lat: default_location.lat,
+    lng: default_location.lng,
+  }));
+};
 
 async function initMap() {
+  // マップの表示設定
   const { Map } = await google.maps.importLibrary("maps");
   const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
   const glyphImg = document.createElement("img");
@@ -101,6 +106,8 @@ async function initMap() {
     mapId: 'DEMO_MAP_ID',
   });
 
+// 取得した温泉地一覧の表示
+  const locations = await fetchDefaultLocations();
   locations.map(location => {
     const pinCustom = new PinElement({
       glyphColor: 'white',

@@ -1,7 +1,4 @@
 Rails.application.routes.draw do
-  namespace :api do
-    get "default_locations/index"
-  end
   devise_for :users
 
   get "maps/index"
@@ -17,4 +14,8 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   root "maps#index"
+
+  namespace :api do
+    resources :default_locations, only: [:index]
+  end
 end
