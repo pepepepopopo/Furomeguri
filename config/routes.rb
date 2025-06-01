@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  namespace :api do
+    get "default_locations/index"
+  end
   devise_for :users
 
   get "maps/index"
