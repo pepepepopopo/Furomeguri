@@ -16,6 +16,6 @@ Rails.application.routes.draw do
   root "maps#index"
 
   namespace :api do
-    resources :default_locations, only: [:index]
+    resources :default_locations, only: [ :index ]
   end
 end
