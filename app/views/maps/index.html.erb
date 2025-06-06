@@ -3,7 +3,7 @@
     <form class="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 w-3/4 px-4">
       <div class="flex space-x-2">
         <div class="relative dropdown-container">
-          <button type="button" class="dropdown-button py-2.5 px-4 bg-gray-100 border border-gray-300 rounded-lg text-sm">
+          <button type="button" class="dropdown-button py-2.5 px-4 bg-gray-100 border border-gray-300 rounded-lg text-sm" >
             温泉地
           </button>
           <div class="dropdown-menu hidden absolute mt-1 w-44 bg-white rounded-lg shadow z-20">
@@ -18,11 +18,12 @@
         </div>
 
         <div class="relative dropdown-container">
-          <button type="button" class="dropdown-button py-2.5 px-4 bg-gray-100 border border-gray-300 rounded-lg text-sm">
+          <button type="button" class="dropdown-button py-2.5 px-4 bg-gray-100 border border-gray-300 rounded-lg text-sm" data-value="どちらも">
             どちらも
           </button>
           <div class="dropdown-menu hidden absolute mt-1 w-44 bg-white rounded-lg shadow z-20">
             <ul class="text-sm text-gray-700">
+              <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100" data-value="どちらも">どちらも</button></li>
               <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">ホテル</button></li>
               <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">旅館</button></li>
             </ul>
@@ -30,11 +31,12 @@
         </div>
 
         <div class="relative dropdown-container">
-          <button type="button" class="dropdown-button py-2.5 px-4 bg-gray-100 border border-gray-300 rounded-lg text-sm">
+          <button type="button" class="dropdown-button py-2.5 px-4 bg-gray-100 border border-gray-300 rounded-lg text-sm" data-value="どちらも">
             どちらも
           </button>
           <div class="dropdown-menu hidden absolute mt-1 w-44 bg-white rounded-lg shadow z-20">
             <ul class="text-sm text-gray-700">
+              <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100" data-value="どちらも">どちらも</button></li>
               <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">飲食店</button></li>
               <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">観光地</button></li>
             </ul>
@@ -43,8 +45,8 @@
 
         <!-- 検索ボックス -->
         <div class="relative w-full">
-          <input type="search" class="block p-2.5 w-full text-sm bg-gray-50 border border-gray-300 rounded-lg" placeholder="検索..." required />
-          <button type="submit" class="absolute top-0 end-0 p-2.5 text-white bg-blue-700 rounded-r-lg hover:bg-blue-800">
+          <input type="search" class="block p-2.5 w-full text-sm bg-gray-50 border border-gray-300 rounded-lg" placeholder="検索" />
+          <button type="button" onClick="searchLocations()" class="absolute top-0 end-0 p-2.5 text-white bg-blue-700 rounded-r-lg hover:bg-blue-800">
             🔍
           </button>
         </div>
@@ -70,7 +72,9 @@
         if(isDropdownButton) {
           menu.classList.toggle('hidden');
         } else if(isMenuItem) {
-          button.textContent = e.target.textContent;
+          const selectedValue = e.target.textContent.trim();
+          button.textContent = selectedValue;
+          button.setAttribute('data-value', selectedValue);
           menu.classList.add('hidden');
         }
       }else {
@@ -99,6 +103,24 @@ const fetchDefaultLocations = async () => {
     lng: default_location.lng,
   }));
 };
+
+// 検索ボタンを押されたときのメソッド
+const searchLocations = () => {
+  const inputLocation = document.querySelectorAll('.dropdown-button')[0].getAttribute('data-value');
+  const stayType = document.querySelectorAll('.dropdown-button')[1].getAttribute('data-value');
+  const facilityType = document.querySelectorAll('.dropdown-button')[2].getAttribute('data-value');
+  const keyword = document.querySelector('input[type="search"]').value;
+
+  if (!inputLocation) {
+    alert('温泉地選択は必須項目となります');
+    return
+  }
+
+  console.log('温泉地:', inputLocation);
+  console.log('宿タイプ:', stayType);
+  console.log('施設タイプ:', facilityType);
+  console.log('キーワード:', keyword);
+}
 
 window.initMap = async function() {
   // マップの表示設定
