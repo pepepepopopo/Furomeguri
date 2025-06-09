@@ -20,28 +20,26 @@
 
         <div class="relative dropdown-container">
           <button type="button" class="dropdown-button py-2.5 px-4 bg-gray-100 border border-gray-300 rounded-lg text-sm" data-target="accommodation_type" >
-            <%= @accommodation_type.present? ? @accommodation_type : "どちらも" %>
+            <%= @accommodation_type.present? ? @accommodation_type : "旅館・ホテル" %>
           </button>
-          <%= hidden_field_tag :accommodation_type, @accommodation_type || "どちらも", id: "accommodation_type" %>
+          <%= hidden_field_tag :accommodation_type, @accommodation_type || "旅館・ホテル", id: "accommodation_type" %>
           <div class="dropdown-menu hidden absolute mt-1 w-44 bg-white rounded-lg shadow z-20">
             <ul class="text-sm text-gray-700">
-              <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">どちらも</button></li>
-              <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">ホテル</button></li>
-              <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">旅館</button></li>
+              <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">旅館・ホテル</button></li>
+              <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">旅館・ホテルを含めない</button></li>
             </ul>
           </div>
         </div>
 
         <div class="relative dropdown-container">
           <button type="button" class="dropdown-button py-2.5 px-4 bg-gray-100 border border-gray-300 rounded-lg text-sm" data-target="poi_type">
-            <%= @poi_type.present? ? @poi_type : "どちらも" %>
+            <%= @poi_type.present? ? @poi_type : "飲食・観光地" %>
           </button>
-          <%= hidden_field_tag :poi_type, @poi_type || "どちらも", id: "poi_type" %>
+          <%= hidden_field_tag :poi_type, @poi_type || "飲食・観光地", id: "poi_type" %>
           <div class="dropdown-menu hidden absolute mt-1 w-44 bg-white rounded-lg shadow z-20">
             <ul class="text-sm text-gray-700">
-              <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">どちらも</button></li>
-              <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">飲食店</button></li>
-              <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">観光地</button></li>
+              <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">飲食・観光地</button></li>
+              <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">飲食・観光地を含めない</button></li>
             </ul>
           </div>
         </div>

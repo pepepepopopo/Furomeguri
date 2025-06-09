@@ -33,7 +33,7 @@ document.addEventListener('click', (e) => {
   }
 });
 
-// turbo:load で一度だけ初期化したい処理（例：地図）
+// turbo:load で一度だけ初期化したい処理（地図）
 document.addEventListener('turbo:load', () => {
   if (typeof initMap === 'function') {
     initMap();
@@ -54,7 +54,7 @@ document.addEventListener('turbo:load', () => {
   }
 });
 
-// fetchDefaultLocations の定義（重複防止）
+// fetchDefaultLocations の定義（load毎での重複防止）
 if (!window.fetchDefaultLocations) {
   window.fetchDefaultLocations = async () => {
     const response = await fetch("/api/default_locations");
@@ -73,12 +73,14 @@ if (!window.initMap) {
     const { Map } = await google.maps.importLibrary("maps");
     const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
 
+    // デフォルトの中心位置(東京駅)
     const map = new Map(document.getElementById("map"), {
       center: { lat: 35.68125718370711, lng: 139.7665076889907 },
       zoom: 6,
       mapId: 'af2da9c1c44ffaf9d071b583',
     });
 
+    // seed値の場所にピンを打つ
     const locations = await fetchDefaultLocations();
     locations.forEach(location => {
       const pinCustom = new PinElement({ glyphColor: 'white' });

@@ -34,21 +34,25 @@ class MapsController < ApplicationController
     locationLatitude = DefaultLocation.find_by( name: location ).lat
       # 経度
     locationLongitude = DefaultLocation.find_by( name: location ).lng
-      # 宿泊施設タイプを設定
-    IncludedTypesAccommodation =
-      # 周辺施設タイプを設定
-    IncludedTypesPoi_type =
-      # キーワード
-
+      # 宿泊施設タイプをtextQueryに設定
+    if accommodation_type == "旅館・ホテル"
+      textQuery_accommodation = "ホテル,旅館"
+    end
+    # 周辺施設タイプをtextQueryに設定
+    if poi_type == "飲食・観光地"
+      textQuery_poi_type = "飲食,観光地"
+    end
+      # textQueryの作成
+    textQuery_keyword = "#{textQuery_accommodation},#{textQuery_poi_type},#{keyword}"
     # リクエストボディの構築
     request_body = {
-      textQuery: "レストラン"
-      includedTypes: ["restaurant"],
+      textQuery: textQuery_keyword,
+      pageSize: 2,
       locationBias: {
         circle: {
           center: {
-            latitude: 36.62303436838449,
-            longitude: 138.59697281955727
+            latitude: locationLatitude,
+            longitude: locationLongitude
           },
           radius: 500.0
         }
@@ -63,7 +67,7 @@ class MapsController < ApplicationController
     headers = {
       'Content-Type': 'application/json',
       'X-Goog-Api-Key': api_key,
-      'X-Goog-FieldMask': 'places.displayName,places.formattedAddress'
+      'X-Goog-FieldMask': 'places.id,places.location'
     }
     headers.each { |key, value| request[key.to_s] = value }
 
@@ -76,6 +80,7 @@ class MapsController < ApplicationController
 
     # リクエストの送信とレスポンスの処理
     response = http.request(request)
+    @response_body = response.body.force_encoding('UTF-8')
 
     # レスポンスのログ出力
     Rails.logger.info "📥 Response status code: #{response.code}"
