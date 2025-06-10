@@ -1,6 +1,6 @@
 <div class="relative h-screen w-screen">
   <div class="relative h-screen w-screen">
-    <%= form_with url: location_search_maps_path, method: :get, local: true, html: { class: "absolute top-4 left-1/2 transform -translate-x-1/2 z-10 w-3/4 px-4" } do %>
+    <%= form_with url: location_search_maps_path, method: :get, local: true, id: 'location-search-form', html: { class: "absolute top-4 left-1/2 transform -translate-x-1/2 z-10 w-3/4 px-4" } do %>
       <div class="flex space-x-2">
         <div class="relative dropdown-container">
           <button type="button" class="dropdown-button py-2.5 px-4 bg-gray-100 border border-gray-300 rounded-lg text-sm" data-target="location" >

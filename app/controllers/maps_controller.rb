@@ -51,6 +51,7 @@ class MapsController < ApplicationController
     request_body = {
       textQuery: textQuery_keyword,
       pageSize: 2,
+      languageCode: "ja",
       locationBias: {
         circle: {
           center: {
@@ -70,7 +71,7 @@ class MapsController < ApplicationController
     headers = {
       'Content-Type': 'application/json',
       'X-Goog-Api-Key': api_key,
-      'X-Goog-FieldMask': 'places.id,places.location'
+      'X-Goog-FieldMask': 'places.id,places.location,places.displayName,places.formattedAddress'
     }
     headers.each { |key, value| request[key.to_s] = value }
 
