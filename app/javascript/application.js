@@ -90,5 +90,16 @@ if (!window.initMap) {
         content: pinCustom.element,
       });
     });
+
+    let searchMarkers = [];
+
+    const clearSearchMarkers = () => {
+      searchMarkers.forEach(marker => {
+        marker.map = null;
+      });
+      searchMarkers = [];
+    }
+
+    
   };
 }

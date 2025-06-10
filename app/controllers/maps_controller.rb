@@ -5,7 +5,9 @@ class MapsController < ApplicationController
 
   def index
     @default_locations = DefaultLocation.all
+  end
 
+  def location_search
     @location = params[:location]
     @accommodation_type = params[:accommodation_type]
     @poi_type = params[:poi_type]
@@ -17,7 +19,8 @@ class MapsController < ApplicationController
     Rails.logger.info "🔍Keyword: #{@keyword}"
 
     if @location.present?
-      @places = nearby_search(@location, @accommodation_type, @poi_type, @keyword)
+      @places = text_search(@location, @accommodation_type, @poi_type, @keyword)
+      render json: {places: @places}
     else
       Rails.logger.warn
     end
@@ -25,7 +28,7 @@ class MapsController < ApplicationController
 
   private
 
-  def nearby_search(location, accommodation_type, poi_type, keyword)
+  def text_search(location, accommodation_type, poi_type, keyword)
     api_key = ENV['GOOGLE_PLACE_API_KEY'] # 環境変数からAPIキーを取得
     uri = URI.parse("https://places.googleapis.com/v1/places:searchText")
 
@@ -80,21 +83,20 @@ class MapsController < ApplicationController
 
     # リクエストの送信とレスポンスの処理
     response = http.request(request)
-    @response_body = response.body.force_encoding('UTF-8')
+    response_body = response.body.force_encoding('UTF-8')
 
     # レスポンスのログ出力
     Rails.logger.info "📥 Response status code: #{response.code}"
-    Rails.logger.info "📥 Response body: #{response.body.force_encoding('UTF-8')}"
+    Rails.logger.info "📥 Response body: #{response_body}"
 
     if response.code == '200'
-      @places = JSON.parse(response.body)['places']
-      Rails.logger.info "✅ Parsed places: #{@places}"
-      render json: @places
+      @searched_location = JSON.parse(response.body)
+      Rails.logger.info "✅ Parsed places: #{@searched_location}"
+      return @searched_location
     else
       @error = "API request failed with status code: #{response.code}"
       Rails.logger.error "❌ #{@error}"
       render json: { error: @error }, status: :internal_server_error
     end
   end
-
 end
