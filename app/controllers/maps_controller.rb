@@ -19,8 +19,8 @@ class MapsController < ApplicationController
     Rails.logger.info "🔍Keyword: #{@keyword}"
 
     if @location.present?
-      @places = text_search(@location, @accommodation_type, @poi_type, @keyword)
-      render json: {places: @places}
+      places = text_search(@location, @accommodation_type, @poi_type, @keyword)
+      render json: places
     else
       Rails.logger.warn
     end
@@ -91,9 +91,9 @@ class MapsController < ApplicationController
     Rails.logger.info "📥 Response body: #{response_body}"
 
     if response.code == '200'
-      @searched_location = JSON.parse(response.body)
-      Rails.logger.info "✅ Parsed places: #{@searched_location}"
-      return @searched_location
+      searched_location = JSON.parse(response.body)
+      Rails.logger.info "✅ Parsed places: #{searched_location}"
+      return searched_location
     else
       @error = "API request failed with status code: #{response.code}"
       Rails.logger.error "❌ #{@error}"

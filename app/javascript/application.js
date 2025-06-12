@@ -40,20 +40,6 @@ document.addEventListener('turbo:load', () => {
   }
 });
 
-// 検索前のバリデーション(温泉地必須)
-document.addEventListener('turbo:load', () => {
-  const form = document.querySelector('form');
-  if (form) {
-    form.addEventListener('submit', function(e) {
-      const location = document.getElementById('location').value;
-      if (!location) {
-        alert('温泉地の選択は必須です');
-        e.preventDefault();
-      }
-    });
-  }
-});
-
 // fetchDefaultLocations の定義（load毎での重複防止）
 if (!window.fetchDefaultLocations) {
   window.fetchDefaultLocations = async () => {
@@ -91,43 +77,82 @@ if (!window.initMap) {
         content: pinCustom.element,
       });
     });
-
-    // テキスト検索
-    document.addEventListener("DOMContentLoaded", () => {
-      const form = document.getElementById("location-search-form");
-      if(form) {
-        form.addEventListener("submit", async(e) => {
-          e.preventDefault();
-
-          // textQueryParamsを定義
-          const formData = new FormData(form);
-          const textQueryParams = new URLSearchParams(formData).toString();
-          console.log("fetch url: ", `/maps/location_search?${textQueryParams}`);
-
-          // Fetch
-          try{
-            const response = await fetch(`/maps/location_search?${textQueryParams}`, {
-              method: "GET",
-              headers: {
-                Accept: "application/json"
-              }
-            });
-            if (!response.ok) throw new Error("通信に失敗しました");
-            const data = await response.json();
-            console.log("検索結果:", data);
-          }catch (error) {
-            console.error("Fetch エラー:", error);
-          }
-        })
-      }
-    })
-
-    // 既存検索結果マーカーをクリア
-    const clearSearchMarkers = () => {
-      searchMarkers.forEach(marker => {
-        marker.map = null;
-      });
-      searchMarkers = [];
-    }
   };
+}
+// テキスト検索
+document.addEventListener('turbo:load', () => {
+  const form = document.getElementById('location-search-form');
+  if (!form) return;
+
+  // 古いイベントリスナが複数つかないように remove→add（必要なら）
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    // 必須チェック
+    const location = document.getElementById('location').value;
+    if (!location) {
+      alert('温泉地の選択は必須です');
+      return;
+    }
+
+    // FormData→URLパラメータ化
+    const formData = new FormData(form);
+    const textQueryParams = new URLSearchParams(formData).toString();
+    console.log("fetch url: ", `/maps/location_search?${textQueryParams}`);
+    const selectedLocation = formData.get("location");
+    await setMapCenterToSelectedLocation(selectedLocation);
+
+    try {
+      const response = await fetch(`/maps/location_search?${textQueryParams}`, {
+        method: "GET",
+        headers: { Accept: "application/json" }
+      });
+      if (!response.ok) throw new Error("通信に失敗しました");
+      const data = await response.json();
+      console.log("検索結果:", data);
+      setSearchMarkers(data.places)
+    } catch (error) {
+      console.error("Fetch エラー:", error);
+    }
+  });
+});
+
+// 既存検索結果マーカーをクリア
+const clearSearchMarkers = () => {
+  searchMarkers.forEach(marker => marker.setMap(null));
+  searchMarkers = [];
+}
+
+// 選択されたlocationを中心にマップを調整
+async function setMapCenterToSelectedLocation(selectedLocationName) {
+  const locations = await fetchDefaultLocations();
+  const base = locations.find(loc => loc.name === selectedLocationName);
+  if (base) {
+    window.map.setCenter({ lat: base.lat, lng: base.lng });
+    window.map.setZoom(16);
+  }
+}
+
+let searchMarkers = [];
+
+// マーカー設置
+async function setSearchMarkers(places) {
+  clearSearchMarkers();
+  if (!window.map) return;
+  const { AdvancedMarkerElement} = await google.maps.importLibrary("marker");
+
+  places.forEach(place => {
+    const lat = place.location.latitude;
+    const lng = place.location.longitude;
+    const name = place.displayName?.text || "名称未設定";
+
+    // pinを作成
+    const marker = new AdvancedMarkerElement({
+      map: window.map,
+      position: { lat, lng },
+      title: name
+    });
+
+    searchMarkers.push(marker);
+  });
 }

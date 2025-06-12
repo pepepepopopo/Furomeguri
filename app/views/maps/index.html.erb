@@ -1,13 +1,14 @@
 <div class="relative h-screen w-screen">
-  <div class="relative h-screen w-screen">
-    <%= form_with url: location_search_maps_path, method: :get, remote: false, id: 'location-search-form', html: { class: "absolute top-4 left-1/2 transform -translate-x-1/2 z-10 w-3/4 px-4" } do %>
+  <div class="mt-[5px] mx-auto w-2/5 px-4 relative z-10">
+    <form id="location-search-form" class="w-full">
       <div class="flex space-x-2">
+        <!-- location -->
         <div class="relative dropdown-container">
-          <button type="button" class="dropdown-button py-2.5 px-4 bg-gray-100 border border-gray-300 rounded-lg text-sm" data-target="location" >
+          <button type="button" class="dropdown-button py-2.5 px-4 bg-gray-100 border border-gray-300 rounded-lg text-sm" data-target="location">
             <%= @location.present? ? @location : "温泉地" %>
           </button>
-          <%= hidden_field_tag :location, @location, id: "location" %>
-          <div class="dropdown-menu hidden absolute mt-1 w-44 bg-white rounded-lg shadow z-20" >
+          <input type="hidden" name="location" id="location" value="<%= @location %>">
+          <div class="dropdown-menu hidden absolute mt-1 w-44 bg-white rounded-lg shadow z-20">
             <ul class="text-sm text-gray-700">
               <% @default_locations.each do |default_location| %>
                 <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">
@@ -18,11 +19,12 @@
           </div>
         </div>
 
+        <!-- accommodation_type -->
         <div class="relative dropdown-container">
-          <button type="button" class="dropdown-button py-2.5 px-4 bg-gray-100 border border-gray-300 rounded-lg text-sm" data-target="accommodation_type" >
+          <button type="button" class="dropdown-button py-2.5 px-4 bg-gray-100 border border-gray-300 rounded-lg text-sm" data-target="accommodation_type">
             <%= @accommodation_type.present? ? @accommodation_type : "旅館・ホテル" %>
           </button>
-          <%= hidden_field_tag :accommodation_type, @accommodation_type || "旅館・ホテル", id: "accommodation_type" %>
+          <input type="hidden" name="accommodation_type" id="accommodation_type" value="<%= @accommodation_type || '旅館・ホテル' %>">
           <div class="dropdown-menu hidden absolute mt-1 w-44 bg-white rounded-lg shadow z-20">
             <ul class="text-sm text-gray-700">
               <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">旅館・ホテル</button></li>
@@ -31,11 +33,12 @@
           </div>
         </div>
 
+        <!-- poi_type -->
         <div class="relative dropdown-container">
           <button type="button" class="dropdown-button py-2.5 px-4 bg-gray-100 border border-gray-300 rounded-lg text-sm" data-target="poi_type">
             <%= @poi_type.present? ? @poi_type : "飲食・観光地" %>
           </button>
-          <%= hidden_field_tag :poi_type, @poi_type || "飲食・観光地", id: "poi_type" %>
+          <input type="hidden" name="poi_type" id="poi_type" value="<%= @poi_type || '飲食・観光地' %>">
           <div class="dropdown-menu hidden absolute mt-1 w-44 bg-white rounded-lg shadow z-20">
             <ul class="text-sm text-gray-700">
               <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">飲食・観光地</button></li>
@@ -44,12 +47,13 @@
           </div>
         </div>
 
+        <!-- keyword -->
         <div class="relative w-full">
-          <%= search_field_tag :keyword, @keyword, placeholder: "検索", class: "block p-2.5 w-full text-sm bg-gray-50 border border-gray-300 rounded-lg" %>
-          <%= submit_tag "🔍", class: "absolute top-0 end-0 p-2.5 text-white bg-blue-700 rounded-r-lg hover:bg-blue-800" %>
+          <input type="search" name="keyword" placeholder="検索" value="<%= @keyword %>" class="block p-2.5 w-full text-sm bg-gray-50 border border-gray-300 rounded-lg">
+          <button type="submit" class="absolute top-0 end-0 p-2.5 text-white bg-blue-700 rounded-r-lg hover:bg-blue-800">🔍</button>
         </div>
       </div>
-    <% end %>
+    </form>
   </div>
   <div class="absolute inset-0 z-0" id='map'></div>
 </div>
