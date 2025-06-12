@@ -1,11 +1,13 @@
 <div class="relative h-screen w-screen">
-  <div class="relative h-screen w-screen">
-    <form class="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 w-3/4 px-4">
+  <div class="mt-[5px] mx-auto w-2/5 px-4 relative z-10">
+    <form id="location-search-form" class="w-full">
       <div class="flex space-x-2">
+        <!-- location -->
         <div class="relative dropdown-container">
-          <button type="button" class="dropdown-button py-2.5 px-4 bg-gray-100 border border-gray-300 rounded-lg text-sm">
-            温泉地
+          <button type="button" class="dropdown-button py-2.5 px-4 bg-gray-100 border border-gray-300 rounded-lg text-sm" data-target="location">
+            <%= @location.present? ? @location : "温泉地" %>
           </button>
+          <input type="hidden" name="location" id="location" value="<%= @location %>">
           <div class="dropdown-menu hidden absolute mt-1 w-44 bg-white rounded-lg shadow z-20">
             <ul class="text-sm text-gray-700">
               <% @default_locations.each do |default_location| %>
@@ -17,110 +19,41 @@
           </div>
         </div>
 
+        <!-- accommodation_type -->
         <div class="relative dropdown-container">
-          <button type="button" class="dropdown-button py-2.5 px-4 bg-gray-100 border border-gray-300 rounded-lg text-sm">
-            どちらも
+          <button type="button" class="dropdown-button py-2.5 px-4 bg-gray-100 border border-gray-300 rounded-lg text-sm" data-target="accommodation_type">
+            <%= @accommodation_type.present? ? @accommodation_type : "旅館・ホテル" %>
           </button>
+          <input type="hidden" name="accommodation_type" id="accommodation_type" value="<%= @accommodation_type || '旅館・ホテル' %>">
           <div class="dropdown-menu hidden absolute mt-1 w-44 bg-white rounded-lg shadow z-20">
             <ul class="text-sm text-gray-700">
-              <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">ホテル</button></li>
-              <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">旅館</button></li>
+              <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">旅館・ホテル</button></li>
+              <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">旅館・ホテルを含めない</button></li>
             </ul>
           </div>
         </div>
 
+        <!-- poi_type -->
         <div class="relative dropdown-container">
-          <button type="button" class="dropdown-button py-2.5 px-4 bg-gray-100 border border-gray-300 rounded-lg text-sm">
-            どちらも
+          <button type="button" class="dropdown-button py-2.5 px-4 bg-gray-100 border border-gray-300 rounded-lg text-sm" data-target="poi_type">
+            <%= @poi_type.present? ? @poi_type : "飲食・観光地" %>
           </button>
+          <input type="hidden" name="poi_type" id="poi_type" value="<%= @poi_type || '飲食・観光地' %>">
           <div class="dropdown-menu hidden absolute mt-1 w-44 bg-white rounded-lg shadow z-20">
             <ul class="text-sm text-gray-700">
-              <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">飲食店</button></li>
-              <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">観光地</button></li>
+              <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">飲食・観光地</button></li>
+              <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">飲食・観光地を含めない</button></li>
             </ul>
           </div>
         </div>
 
-        <!-- 検索ボックス -->
+        <!-- keyword -->
         <div class="relative w-full">
-          <input type="search" class="block p-2.5 w-full text-sm bg-gray-50 border border-gray-300 rounded-lg" placeholder="検索..." required />
-          <button type="submit" class="absolute top-0 end-0 p-2.5 text-white bg-blue-700 rounded-r-lg hover:bg-blue-800">
-            🔍
-          </button>
+          <input type="search" name="keyword" placeholder="検索" value="<%= @keyword %>" class="block p-2.5 w-full text-sm bg-gray-50 border border-gray-300 rounded-lg">
+          <button type="submit" class="absolute top-0 end-0 p-2.5 text-white bg-blue-700 rounded-r-lg hover:bg-blue-800">🔍</button>
         </div>
       </div>
     </form>
   </div>
-
   <div class="absolute inset-0 z-0" id='map'></div>
 </div>
-
-<script>
-// ドロップダウンメソッド
-  document.addEventListener('click', (e) => {
-    const isDropdownButton = e.target.closest('.dropdown-button');
-    const isMenuItem = e.target.closest('.dropdown-menu button');
-    const containers = document.querySelectorAll('.dropdown-container');
-
-    containers.forEach(container => {
-      const menu = container.querySelector('.dropdown-menu');
-      const button = container.querySelector('.dropdown-button');
-
-      if (container.contains(e.target)) {
-        if(isDropdownButton) {
-          menu.classList.toggle('hidden');
-        } else if(isMenuItem) {
-          button.textContent = e.target.textContent;
-          menu.classList.add('hidden');
-        }
-      }else {
-        menu.classList.add('hidden');
-      }
-    });
-  });
-</script>
-
-<!-- Google Maps API -->
-<script
-src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_MAP_API_KEY'] || '環境変数未設定' %>&callback=initMap&v=weekly&libraries=marker"
-defer></script>
-
-<script>
-let map;
-let locations = [];
-
-// API経由でdefault_locationsから温泉地一覧取得
-const fetchDefaultLocations = async () => {
-  const response = await fetch("/api/default_locations");
-  const data = await response.json();
-  return data.map(default_location => ({
-    name: default_location.name,
-    lat: default_location.lat,
-    lng: default_location.lng,
-  }));
-};
-
-window.initMap = async function() {
-  // マップの表示設定
-  const { Map } = await google.maps.importLibrary("maps");
-  const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
-    map = new Map(document.getElementById("map"), {
-    center: {lat: 35.68125718370711, lng:139.7665076889907},
-    zoom: 6,
-    mapId: 'af2da9c1c44ffaf9d071b583',
-  });
-
-// 取得した温泉地一覧の表示
-  const locations = await fetchDefaultLocations();
-  locations.map(location => {
-    const pinCustom = new PinElement({
-      glyphColor: 'white',
-    });
-    const marker = new AdvancedMarkerElement({
-      map: map,
-      position: {lat: location.lat, lng: location.lng },
-      content: pinCustom.element,
-    });
-  });
-};
-</script>
