@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get "itinerary_blocks/create"
+  get "itinerary_blocks/destroy"
   get "itineraries/index"
   get "itineraries/new"
   get "itineraries/create"
