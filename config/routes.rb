@@ -1,4 +1,10 @@
 Rails.application.routes.draw do
+  get "itineraries/index"
+  get "itineraries/new"
+  get "itineraries/create"
+  get "itineraries/edit"
+  get "itineraries/update"
+  get "itineraries/show"
   devise_for :users
 
   resources :maps, only: [ :index ] do
@@ -6,10 +12,9 @@ Rails.application.routes.draw do
       get "location_search"
     end
   end
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
-
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
+  resources :itineraries, only: %i[index new create edit update show] do
+    resources :itineraries_blocks, only: %i[create destroy]
+  end
   get "up" => "rails/health#show", as: :rails_health_check
 
   # Render dynamic PWA files from app/views/pwa/*
