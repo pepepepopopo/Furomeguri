@@ -79,6 +79,25 @@ if (!window.initMap) {
     });
   };
 }
+
+// 既存検索結果マーカーをクリア
+const clearSearchMarkers = () => {
+  searchMarkers.forEach(m => (m.map = null));
+  searchMarkers = [];
+}
+
+// 選択されたlocationを中心にマップを調整
+async function setMapCenterToSelectedLocation(selectedLocationName) {
+  const locations = await fetchDefaultLocations();
+  const base = locations.find(loc => loc.name === selectedLocationName);
+  if (base) {
+    window.map.setCenter({ lat: base.lat, lng: base.lng });
+    window.map.setZoom(16);
+  }
+}
+
+let searchMarkers = [];
+
 // テキスト検索
 document.addEventListener('turbo:load', () => {
   const form = document.getElementById('location-search-form');
@@ -116,41 +135,29 @@ document.addEventListener('turbo:load', () => {
     }
   });
 });
-
-// 既存検索結果マーカーをクリア
-const clearSearchMarkers = () => {
-  searchMarkers.forEach(marker => marker.setMap(null));
-  searchMarkers = [];
-}
-
-// 選択されたlocationを中心にマップを調整
-async function setMapCenterToSelectedLocation(selectedLocationName) {
-  const locations = await fetchDefaultLocations();
-  const base = locations.find(loc => loc.name === selectedLocationName);
-  if (base) {
-    window.map.setCenter({ lat: base.lat, lng: base.lng });
-    window.map.setZoom(16);
-  }
-}
-
-let searchMarkers = [];
-
-// マーカー設置
+// マーカー設置(情報ウィンドウ付き)
 async function setSearchMarkers(places) {
   clearSearchMarkers();
   if (!window.map) return;
-  const { AdvancedMarkerElement} = await google.maps.importLibrary("marker");
+
+  const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary('marker');
+  const infoWindow = new google.maps.InfoWindow();
 
   places.forEach(place => {
-    const lat = place.location.latitude;
-    const lng = place.location.longitude;
-    const name = place.displayName?.text || "名称未設定";
+    const { latitude: lat, longitude: lng } = place.location;
+    const name = place.displayName?.text || '名称未設定';
 
-    // pinを作成
     const marker = new AdvancedMarkerElement({
       map: window.map,
       position: { lat, lng },
-      title: name
+      title: name,
+      content: new PinElement().element
+    });
+
+    // クリックイベント
+    marker.addListener('gmp-click', () => {
+      infoWindow.setContent(`<strong>${name}</strong>`);
+      infoWindow.open(window.map, marker);
     });
 
     searchMarkers.push(marker);

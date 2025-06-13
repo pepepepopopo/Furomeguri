@@ -1,9 +1,9 @@
 Rails.application.routes.draw do
   devise_for :users
 
-  resources :maps, only: [:index] do
+  resources :maps, only: [ :index ] do
     collection do
-      get 'location_search'
+      get "location_search"
     end
   end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
