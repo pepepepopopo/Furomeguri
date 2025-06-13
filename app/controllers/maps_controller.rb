@@ -1,7 +1,7 @@
 class MapsController < ApplicationController
-  require 'net/http'
-  require 'uri'
-  require 'json'
+  require "net/http"
+  require "uri"
+  require "json"
 
   def index
     @default_locations = DefaultLocation.all
@@ -29,13 +29,13 @@ class MapsController < ApplicationController
   private
 
   def text_search(location, accommodation_type, poi_type, keyword)
-    api_key = ENV['GOOGLE_PLACE_API_KEY'] # 環境変数からAPIキーを取得
+    api_key = ENV["GOOGLE_PLACE_API_KEY"] # 環境変数からAPIキーを取得
     uri = URI.parse("https://places.googleapis.com/v1/places:searchText")
 
     # 引数をリクエストボディ用に加工
-      # 緯度
-    locationLatitude = DefaultLocation.find_by( name: location ).lat
-      # 経度
+    # 緯度
+    locationLatitude = DefaultLocation.find_by(name: location).lat
+    # 経度
     locationLongitude = DefaultLocation.find_by( name: location ).lng
       # 宿泊施設タイプをtextQueryに設定
     if accommodation_type == "旅館・ホテル"
