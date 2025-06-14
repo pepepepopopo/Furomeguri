@@ -18,17 +18,13 @@ class ItinerariesController < ApplicationController
   end
 
   def edit
+    @default_locations = DefaultLocation.all
     @blocks = @itinerary.itinerary_blocks
   end
 
   def update
     @itinerary = itineraries.find_by(params[:id])
-    if @itinerary.update(itinerary_params)
-      redirect_to edit_itinerary_path(@Itinerary), notice: "更新しました"
-    else
-      @blocks = @itinerary.itinerary_blocks
-      render :edit, status: :unprocessable_entity
-    end
+    redirect_to edit_itinerary_path(@Itinerary), notice: "更新しました"
   end
 
   def show

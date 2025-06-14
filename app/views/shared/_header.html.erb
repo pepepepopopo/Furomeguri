@@ -1,28 +1,28 @@
-<header class="text-gray-600 body-font">
-  <div class="mx-auto flex flex-wrap p-2 flex-col md:flex-row items-center bg-lime-200">
-      <%= link_to root_path, class:"flex title-font font-medium items-center text-gray-900 mb-0 py-0" do %>
-        <%= image_tag 'Furomeguri_logo.png', class: 'h-12 w-auto object-contain m-0 p-0' %>
-        <span class="ml-3 text-xl text-lime-900">ふろめぐり</span>
-      <% end %>
-    <nav class="md:ml-auto flex flex-wrap items-center text-base justify-center">
+<header class="sticky top-0 z-50 h-14 backdrop-blur bg-lime-200/90 text-gray-600">
+  <div class="max-w-7xl mx-auto flex flex-wrap items-center px-4 py-2">
+
+    <!-- ロゴ -->
+    <%= link_to root_path,
+      class: "flex items-center gap-2 text-lime-900 font-semibold" do %>
+      <%= image_tag "Furomeguri_logo.png", class: "h-10 w-auto object-contain" %>
+      <span class="text-xl">ふろめぐり</span>
+    <% end %>
+
+    <!-- ナビ -->
+    <nav class="ml-auto flex flex-wrap items-center gap-3 text-base">
       <% if user_signed_in? %>
-        <button class="mr-5 inline-flex items-center bg-orange-300 border-0 py-1 px-3 text-lime-900 focus:outline-none hover:bg-orange-400 rounded text-base mt-4 md:mt-0">
-          <%= link_to '旅程一覧', ""  %>
-        </button>
-        <button class="mr-5 inline-flex items-center bg-orange-300 border-0 py-1 px-3 text-lime-900 focus:outline-none hover:bg-orange-400 rounded text-base mt-4 md:mt-0">
-          <%= link_to 'アカウント名', ""  %>
-        </button>
-        <button class="mr-5 inline-flex items-center bg-orange-300 border-0 py-1 px-3 text-lime-900 focus:outline-none hover:bg-orange-400 rounded text-base mt-4 md:mt-0">
-          <%= link_to 'ログアウト', destroy_user_session_path, method: :delete  %>
-        </button>
+        <%= link_to '旅程一覧', itineraries_path,
+              class: "nav-btn" %>
+        <%= link_to current_user.email, "#",
+              class: "nav-btn" %>
+        <%= link_to 'ログアウト', destroy_user_session_path,
+              data: { turbo_method: :delete },
+              class: "nav-btn" %>
       <% else %>
-        <button class="mr-5 inline-flex items-center bg-orange-300 border-0 py-1 px-3 text-lime-900 focus:outline-none hover:bg-orange-400 rounded text-base mt-4 md:mt-0">
-          <%= link_to '新規登録', new_user_registration_path %>
-        </button>
-        <button class="mr-5 inline-flex items-center bg-orange-300 border-0 py-1 px-3 text-lime-900 focus:outline-none hover:bg-orange-400 rounded text-base mt-4 md:mt-0">
-          <%= link_to 'ログイン', user_session_path %>
-        </button>
+        <%= link_to '新規登録', new_user_registration_path, class: "inline-flex items-center bg-orange-300 py-1 px-3 rounded text-lime-900 text-sm hover:bg-orange-400" %>
+        <%= link_to 'ログイン', user_session_path,         class: "inline-flex items-center bg-orange-300 py-1 px-3 rounded text-lime-900 text-sm hover:bg-orange-400" %>
       <% end %>
     </nav>
   </div>
 </header>
+
