@@ -43,7 +43,7 @@ class ItinerariesController < ApplicationController
   private
 
   def set_itinerary
-    @itinerary = itineraries.find(params[:id])
+    @itinerary = Itinerary.find(params[:id])
   end
   def itinerary_params
     params.require(:itinerary).permit(:title, :subtitle)
