@@ -58,6 +58,10 @@ if (!window.initMap) {
   window.initMap = async function () {
     const { Map } = await google.maps.importLibrary("maps");
     const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
+    const mapDiv = document.getElementById("mapDiv")
+  if (!mapDiv) { // 地図が無いページなら何もしない
+    return;
+  }
 
     // デフォルトの中心位置(東京駅)
     const mapElement = document.getElementById("map");

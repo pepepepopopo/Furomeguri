@@ -1,12 +1,4 @@
 Rails.application.routes.draw do
-  get "itinerary_blocks/create"
-  get "itinerary_blocks/destroy"
-  get "itineraries/index"
-  get "itineraries/new"
-  get "itineraries/create"
-  get "itineraries/edit"
-  get "itineraries/update"
-  get "itineraries/show"
   devise_for :users
 
   resources :maps, only: [ :index ] do
@@ -14,6 +6,7 @@ Rails.application.routes.draw do
       get "location_search"
     end
   end
+
   resources :itineraries, only: %i[index new create edit update show] do
     resources :itineraries_blocks, only: %i[create destroy]
   end
