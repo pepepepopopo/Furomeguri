@@ -23,7 +23,7 @@ class ItinerariesController < ApplicationController
   end
 
   def update
-    @itinerary = itineraries.find_by(params[:id])
+    @itinerary = Itinerary.find_by(params[:id])
     redirect_to edit_itinerary_path(@Itinerary), notice: "更新しました"
   end
 
@@ -31,7 +31,7 @@ class ItinerariesController < ApplicationController
   end
 
   def destroy
-    itinerary = itineraries.find(params[:id])
+    itinerary = Itinerary.find(params[:id])
     itinerary.destroy!
     redirect_to itineraries_path, notice: "削除しました", status: :see_other
   end

@@ -8,7 +8,7 @@ Rails.application.routes.draw do
   end
 
   resources :itineraries, only: %i[index new create edit update show] do
-    resources :itineraries_blocks, only: %i[create update destroy]
+    resources :itinerary_blocks, only: %i[create update destroy]
   end
   get "up" => "rails/health#show", as: :rails_health_check
 

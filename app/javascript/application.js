@@ -56,6 +56,8 @@ if (!window.fetchDefaultLocations) {
 // Google Maps 初期化
 if (!window.initMap) {
   window.initMap = async function () {
+    const mapDev = document.getElementById("map");
+    if(!mapDev) return;
     const { Map } = await google.maps.importLibrary("maps");
     const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
 
@@ -101,9 +103,7 @@ let searchMarkers = [];
 // テキスト検索
 document.addEventListener('turbo:load', () => {
   const form = document.getElementById('location-search-form');
-  if (!form) return;
-
-  // 古いイベントリスナが複数つかないように remove→add（必要なら）
+  if(!form) return;
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -154,12 +154,60 @@ async function setSearchMarkers(places) {
       content: new PinElement().element
     });
 
-    // クリックイベント
+    // クリックされたときの情報ウィンドウ
     marker.addListener('gmp-click', () => {
-      infoWindow.setContent(`<strong>${name}</strong>`);
+      infoWindow.setContent(`
+        <strong>${name}</strong>
+        </br>
+        <button id="add_itinerary_button"
+        data-place-id="${place.id}"
+        data-name="${place.displayName.text}"
+        data-lat="${place.location.latitude}"
+        data-lng="${place.location.longitude}"
+        class="mt-2 px-3 py-1 bg-orange-400 text-white rounded hover:bg-orange-500">
+          +旅程追加!
+        </button>
+      `);
       infoWindow.open(window.map, marker);
     });
 
     searchMarkers.push(marker);
   });
 }
+
+document.addEventListener('turbo:load', () => {
+  const sidebar = document.getElementById('sidebar');
+  if (!sidebar) return;
+  document.addEventListener('click', async(e) =>{
+    const addItineraryButton = e.target.closest('#add_itinerary_button');
+    if (!addItineraryButton) return;
+    e.preventDefault();
+    if (addItineraryButton.disabled) return;
+    const { placeId, name, lat, lng } = addItineraryButton.dataset;
+    console.log(placeId, name, lat, lng)
+
+    const itineraryId = document.getElementById('sidebar')?.dataset.itineraryId;
+    try {
+      addItineraryButton.disabled = true;
+      await fetch(`/itineraries/${itineraryId}/itinerary_blocks`, {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'text/vnd.turbo-stream.html',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({
+          itinerary_blocks: {
+            google_place_id: placeId,
+            name: name,
+            lat: lat,
+            lng: lng,
+          }
+        })
+      })
+    } catch (error) {
+      console.error('旅程追加に失敗しました', error);
+      button.disabled = false;
+    }
+  })
+})

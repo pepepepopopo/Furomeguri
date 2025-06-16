@@ -2,14 +2,25 @@ class ItineraryBlocksController < ApplicationController
 
   def create
     @itinerary = Itinerary.find(params[:itinerary_id])
+    @block = @itinerary.itinerary_blocks.build(itinerary_block_params)
+    @block.save!
+
+    render turbo_stream: turbo_stream.replace(
+      'sidebar_frame',
+      partial: 'sidebars/sidebar',
+      local: {
+        itinerary: @itinerary,
+        blocks: @itinerary.itinerary_blocks.order(:created_at)
+      }
+    )
   end
 
   def update
     @block = ItineraryBlock.find(params[:id])
     if @block.update(itinerary_block_params)
-      head: :ok
+      head :ok
     else
-      head: :unprocessable_entity
+      head :unprocessable_entity
     end
   end
 
@@ -20,6 +31,6 @@ class ItineraryBlocksController < ApplicationController
 
   private
   def itinerary_block_params
-    params.require(:block).permit(:google_place_id, :name, :description, :starttime)
+    params.require(:itinerary_blocks).permit(:google_place_id, :name, :lat, :lng, :description, :starttime)
   end
 end
