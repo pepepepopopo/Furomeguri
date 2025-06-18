@@ -18,8 +18,8 @@ class ItineraryBlocksController < ApplicationController
     )
 
     render turbo_stream: turbo_stream.append(
-      'sidebar-items',
-      partial: 'shared/block',
+      "sidebar-items",
+      partial: "shared/block",
       locals:  { block: @block }
     )
   end

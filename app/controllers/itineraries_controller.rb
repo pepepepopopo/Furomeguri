@@ -23,7 +23,7 @@ class ItinerariesController < ApplicationController
   end
 
   def update
-    @itinerary = Itinerary.find_by(params[:id])
+    @itinerary = Itinerary.find_by!(id: params[:id])
     redirect_to edit_itinerary_path(@Itinerary), notice: "更新しました"
   end
 
