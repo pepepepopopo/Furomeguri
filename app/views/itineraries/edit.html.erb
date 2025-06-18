@@ -2,7 +2,5 @@
   <div class="flex-1 relative min-h-0">
     <%= render 'shared/map' %>
   </div>
-  <turbo-frame id="sidebar_frame">
-    <%= render 'shared/sidebar' %>
-  </turbo-frame>
+  <%= render partial: 'shared/sidebar', locals: { itinerary: @itinerary, blocks: @itinerary.itinerary_blocks } %>
 </div>

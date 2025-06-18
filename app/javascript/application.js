@@ -175,39 +175,61 @@ async function setSearchMarkers(places) {
   });
 }
 
+// 旅程追加ボタンを押したときの処理
 document.addEventListener('turbo:load', () => {
   const sidebar = document.getElementById('sidebar');
   if (!sidebar) return;
-  document.addEventListener('click', async(e) =>{
+
+  const clickHandler = async (e) => {
     const addItineraryButton = e.target.closest('#add_itinerary_button');
     if (!addItineraryButton) return;
+
     e.preventDefault();
     if (addItineraryButton.disabled) return;
-    const { placeId, name, lat, lng } = addItineraryButton.dataset;
-    console.log(placeId, name, lat, lng)
 
-    const itineraryId = document.getElementById('sidebar')?.dataset.itineraryId;
+    const {
+      placeId,
+      name,
+      lat: latStr,
+      lng: lngStr,
+    } = addItineraryButton.dataset;
+
+    const lat = parseFloat(latStr);
+    const lng = parseFloat(lngStr);
+    const itineraryId = sidebar.dataset.itineraryId;
+
     try {
       addItineraryButton.disabled = true;
-      await fetch(`/itineraries/${itineraryId}/itinerary_blocks`, {
-        method: "POST",
+
+      const response = await fetch(`/itineraries/${itineraryId}/itinerary_blocks`, {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'text/vnd.turbo-stream.html',
-          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content,
         },
         body: JSON.stringify({
-          itinerary_blocks: {
+          itinerary_block: {
             google_place_id: placeId,
-            name: name,
-            lat: lat,
-            lng: lng,
-          }
-        })
-      })
+            name,
+            lat,
+            lng,
+          },
+        }),
+      });
+      if (response.ok) {
+        const streamHtml = await response.text();
+        Turbo.renderStreamMessage(streamHtml);
+      } else {
+        console.log("追加失敗", await response.text());
+      }
     } catch (error) {
       console.error('旅程追加に失敗しました', error);
-      button.disabled = false;
+      addItineraryButton.disabled = false;
     }
-  })
-})
+  };
+
+  // 多重登録を防ぐため、一度外してから付け直す
+  document.removeEventListener('click', clickHandler);
+  document.addEventListener('click', clickHandler);
+});
