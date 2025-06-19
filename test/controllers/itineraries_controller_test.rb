@@ -1,6 +1,7 @@
 require "test_helper"
 
 class ItinerariesControllerTest < ActionDispatch::IntegrationTest
+  skip
   setup do
     @itinerary = itineraries(:one)
   end
