@@ -5,11 +5,11 @@ one:
   starttime: 2025-05-15 21:33:22
   description: MyText
   position: 1
-  itinerary: one_fixture_name
+  itinerary: one
 
 two:
   place: two
   starttime: 2025-05-15 21:33:22
   description: MyText
   position: 1
-  itinerary: two_fixture_name
+  itinerary: two
