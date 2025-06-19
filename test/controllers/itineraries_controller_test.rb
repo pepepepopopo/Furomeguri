@@ -2,38 +2,32 @@ require "test_helper"
 
 class ItinerariesControllerTest < ActionDispatch::IntegrationTest
 
-  test "should get index" do
-    skip
+  test "should get index", skip:"test未書き換え" do
     get itineraries_url
     assert_response :success
   end
 
-  test "should get new" do
-    skip
+  test "should get new", skip:"test未書き換え" do
     get new_itinerary_url
     assert_response :success
   end
 
-  test "should get create" do
-    skip
+  test "should get create", skip:"test未書き換え" do
     post new_itinerary_url
     assert_response :success
   end
 
-  test "should get edit" do
-    skip
+  test "should get edit", skip:"test未書き換え" do
     get edit_itinerary_url(@itinerary)
     assert_response :success
   end
 
-  test "should get update" do
-    skip
+  test "should get update", skip:"test未書き換え" do
     patch itinerary_url(@itinerary)
     assert_response :success
   end
 
-  test "should get show" do
-    skip
+  test "should get show", skip:"test未書き換え" do
     get itinerary_url(@itinerary)
     assert_response :success
   end
