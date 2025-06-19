@@ -12,7 +12,7 @@ class ItinerariesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get create" do
-    get itineraries_url
+    post itineraries_url, params: { itinerary: { title: "テスト", subtitle: "テストサブ", user_id: @itinerary.user_id } }
     assert_response :success
   end
 
