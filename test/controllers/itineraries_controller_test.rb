@@ -12,22 +12,22 @@ class ItinerariesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get create" do
-    post itineraries_url, params: { itinerary: { title: "テスト", subtitle: "テストサブ", user_id: @itinerary.user_id } }
+    post new_itinerary_url
     assert_response :success
   end
 
   test "should get edit" do
-    get edit_itinerary_url(@itinerary)
+    get edit_itinerary_url
     assert_response :success
   end
 
   test "should get update" do
-    get itinerary_url(@itinerary)
+    patch itinerary_url
     assert_response :success
   end
 
   test "should get show" do
-    get itinerary_url(@itinerary)
+    get itinerary_url
     assert_response :success
   end
 end
