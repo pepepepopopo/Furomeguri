@@ -6,7 +6,8 @@
 
   <%= text_area_tag 'blocks[][description]', block.description, class: "text-sm text-gray-500 truncate", placeholder: "メモ" %>
 
-  <%= datetime_tag 'blocks[][starttime]', block.starttime, class: "text-xs text-gray-500" %>
+  <p>到着時間</p>
+  <%= time_select 'blocks[][starttime]', block.starttime, class: "text-xs text-gray-500" %>
 
   <%= hidden_field_tag 'blocks[][id]', block.id %>
 </div>

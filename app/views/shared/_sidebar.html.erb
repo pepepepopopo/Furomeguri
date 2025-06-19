@@ -17,13 +17,7 @@
 
       <!-- ブロック一覧 -->
       <div id="sidebar-items" class="flex-1 overflow-y-auto divide-y divide-gray-100">
-        <% if blocks.present? %>
-          <%= render partial: 'shared/block', collection: blocks, as: :block %>
-        <% else %>
-          <p class="p-4 text-sm text-gray-500">
-            スポットが無いようです。検索して旅程に追加しましょう。
-          </p>
-        <% end %>
+        <%= render partial: 'shared/block', collection: blocks, as: :block %>
       </div>
 
       <!-- フッター -->
