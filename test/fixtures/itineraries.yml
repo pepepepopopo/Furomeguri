@@ -2,12 +2,10 @@
 
 one:
   user: one
-  itinerariy_block: one
   title: MyText
   subtitle: MyText
 
 two:
   user: two
-  itinerariy_block: two
   title: MyText
   subtitle: MyText

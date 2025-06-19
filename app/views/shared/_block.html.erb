@@ -1,0 +1,12 @@
+<div id="block_<%= block.id %>" class="p-4">
+
+  <p class="font-medium text-gray-900">
+    <%= block.place.name %>
+  </p>
+
+  <%= text_area_tag 'blocks[][description]', block.description, class: "text-sm text-gray-500 truncate", placeholder: "メモ" %>
+
+  <%= datetime_tag 'blocks[][starttime]', block.starttime, class: "text-xs text-gray-500" %>
+
+  <%= hidden_field_tag 'blocks[][id]', block.id %>
+</div>

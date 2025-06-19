@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_06_01_021253) do
+ActiveRecord::Schema[7.2].define(version: 2025_06_16_124853) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -23,31 +23,34 @@ ActiveRecord::Schema[7.2].define(version: 2025_06_01_021253) do
   end
 
   create_table "itineraries", force: :cascade do |t|
-    t.bigint "user_id", null: false
-    t.bigint "itinerariy_block_id", null: false
+    t.bigint "user_id"
     t.text "title"
     t.text "subtitle"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["itinerariy_block_id"], name: "index_itineraries_on_itinerariy_block_id"
     t.index ["user_id"], name: "index_itineraries_on_user_id"
   end
 
-  create_table "itinerariy_blocks", force: :cascade do |t|
+  create_table "itinerary_blocks", force: :cascade do |t|
     t.bigint "place_id", null: false
     t.datetime "starttime"
     t.text "description"
     t.integer "position"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["place_id"], name: "index_itinerariy_blocks_on_place_id"
+    t.bigint "itinerary_id", null: false
+    t.index ["itinerary_id"], name: "index_itinerary_blocks_on_itinerary_id"
+    t.index ["place_id"], name: "index_itinerary_blocks_on_place_id"
   end
 
   create_table "places", force: :cascade do |t|
-    t.text "google_place_id"
+    t.string "google_place_id"
     t.text "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.float "lat"
+    t.float "lng"
+    t.index ["google_place_id"], name: "index_places_on_google_place_id", unique: true
   end
 
   create_table "users", force: :cascade do |t|
@@ -62,7 +65,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_06_01_021253) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
-  add_foreign_key "itineraries", "itinerariy_blocks"
   add_foreign_key "itineraries", "users"
-  add_foreign_key "itinerariy_blocks", "places"
+  add_foreign_key "itinerary_blocks", "itineraries"
+  add_foreign_key "itinerary_blocks", "places"
 end

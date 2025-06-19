@@ -1,4 +1,4 @@
 class Itinerary < ApplicationRecord
-  belongs_to :user
-  belongs_to :itinerariy_block
+  belongs_to :user, optional: true
+  has_many :itinerary_blocks, dependent: :destroy
 end
