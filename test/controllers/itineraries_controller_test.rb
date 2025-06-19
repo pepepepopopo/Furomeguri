@@ -7,27 +7,27 @@ class ItinerariesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get new" do
-    get itineraries_new_url
+    get new_itinerary_url
     assert_response :success
   end
 
   test "should get create" do
-    get itineraries_create_url
+    get create_itinerary_url
     assert_response :success
   end
 
   test "should get edit" do
-    get itineraries_edit_url
+    get edit_itinerary_url
     assert_response :success
   end
 
   test "should get update" do
-    get itineraries_update_url
+    get update_itinerary_url
     assert_response :success
   end
 
   test "should get show" do
-    get itineraries_show_url
+    get show_itinerary_url
     assert_response :success
   end
 end
