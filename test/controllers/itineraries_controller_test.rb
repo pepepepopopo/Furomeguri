@@ -17,17 +17,17 @@ class ItinerariesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get edit" do
-    get edit_itinerary_url(itinerary)
+    get edit_itinerary_url(@itinerary)
     assert_response :success
   end
 
   test "should get update" do
-    get itinerary_url(itinerary)
+    get itinerary_url(@itinerary)
     assert_response :success
   end
 
   test "should get show" do
-    get itinerary_url(itinerary)
+    get itinerary_url(@itinerary)
     assert_response :success
   end
 end
