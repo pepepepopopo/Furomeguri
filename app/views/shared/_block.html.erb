@@ -1,12 +1,21 @@
-<div id="block_<%= block.id %>" class="p-4">
+<turbo-frame id="block_<%= block.id %>">
+  <div id="block_<%= block.id || 'new' %>" class="p-4">
 
-  <p class="font-medium text-gray-900">
-    <%= block.place.name %>
-  </p>
+    <p class="font-medium text-gray-900">
+      <%= block.place.name %>
+    </p>
 
-  <%= text_area_tag 'blocks[][description]', block.description, class: "text-sm text-gray-500 truncate", placeholder: "メモ" %>
+    <%= text_area_tag 'blocks[][description]', block.description, class: "text-sm text-gray-500 truncate", placeholder: "持ち物 etc.." %>
 
-  <%= datetime_tag 'blocks[][starttime]', block.starttime, class: "text-xs text-gray-500" %>
+    <p>到着時間</p>
+    <%= time_select 'blocks[][starttime]', block.starttime, class: "text-xs text-gray-500" %>
 
-  <%= hidden_field_tag 'blocks[][id]', block.id %>
-</div>
+    <%= hidden_field_tag 'blocks[][id]', block.id %>
+    <%= hidden_field_tag 'block[][_destroy]', '0', class: 'js-destroy-flag' %>
+    <%= button_to "削除", itinerary_itinerary_block_path(block.itinerary, block),
+      method: :delete,
+      data: {turbo_stream: true},
+      class: "text-red-500"
+    %>
+  </div>
+</turbo-frame>
