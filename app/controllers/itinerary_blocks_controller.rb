@@ -41,7 +41,7 @@ class ItineraryBlocksController < ApplicationController
       format.turbo_stream do
         render turbo_stream: turbo_stream.remove("block_#{@block.id}")
       end
-      format.html { redirect_back fallback_location: itinerary_path(@block.itinerary)}
+      format.html { redirect_back fallback_location: itinerary_path(@block.itinerary) }
     end
   end
 
