@@ -45,7 +45,7 @@ class MapsController < ApplicationController
     # リクエストボディの構築
     request_body = {
       textQuery: textQuery_keyword,
-      pageSize: 2,
+      pageSize: 20,
       languageCode: "ja",
       locationBias: {
         circle: {

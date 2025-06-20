@@ -1,14 +1,15 @@
 <div class="flex flex-col space-y-4 p-4 mx-auto">
   <% @blocks.each do |block| %>
     <div class="bg-white border border-gray-200 rounded-lg shadow p-4">
-      <% if block.starttime.present? %>
-        <h3 class="text-lg font-semibold text-gray-800 mb-2">
-          <%= l(block.starttime, format: :short) %>
-        </h3>
-      <% end %>
       <p class="text-base font-medium text-gray-900">
         <%= block.place.name %>
       </p>
+      <p>到着予定時間</p>
+      <% if block.starttime.present? %>
+        <h3 class="text-lg font-semibold text-gray-800 mb-2">
+          <%= block.starttime.strftime('%Y/%m/%d %H:%M') %>頃
+        </h3>
+      <% end %>
       <% if block.description.present? %>
         <p class="mt-1 text-sm text-gray-600">
           <%= block.description %>
