@@ -1,11 +1,12 @@
 class ItinerariesController < ApplicationController
+  before_action :authenticate_user!
   before_action :set_itinerary, only: %i[edit update show destroy]
   def index
-    @itineraries = Itinerary.order(created_at: :desc)
+    @itineraries = current_user.itineraries.order(created_at: :desc)
   end
 
   def new
-    @itinerary = Itinerary.new
+    @itinerary = current_user.itineraries.new
   end
 
   def show
@@ -13,7 +14,7 @@ class ItinerariesController < ApplicationController
   end
 
   def create
-    @itinerary = Itinerary.new(itinerary_params)
+    @itinerary = current_user.itineraries.build(itinerary_params)
     if @itinerary.save
       redirect_to edit_itinerary_path(@itinerary), notice: "新規旅行計画を作成しました"
     else
@@ -57,7 +58,7 @@ class ItinerariesController < ApplicationController
   end
 
   def destroy
-    itinerary = Itinerary.find(params[:id])
+    itinerary = current_user.itineraries.find(params[:id])
     itinerary.destroy!
     redirect_to itineraries_path, notice: "削除しました", status: :see_other
   end
@@ -65,7 +66,7 @@ class ItinerariesController < ApplicationController
   private
 
   def set_itinerary
-    @itinerary = Itinerary.find(params[:id])
+    @itinerary = current_user.itineraries.find(params[:id])
   end
 
   def itinerary_params
