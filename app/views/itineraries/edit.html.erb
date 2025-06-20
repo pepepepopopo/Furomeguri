@@ -2,5 +2,7 @@
   <div class="flex-1 relative min-h-0">
     <%= render 'shared/map' %>
   </div>
-  <%= render partial: 'shared/sidebar', locals: { itinerary: @itinerary, blocks: @itinerary.itinerary_blocks } %>
+  <div class="relative">
+    <%= render partial: 'shared/sidebar', locals: { itinerary: @itinerary, blocks: @itinerary.itinerary_blocks } %>
+  </div>
 </div>

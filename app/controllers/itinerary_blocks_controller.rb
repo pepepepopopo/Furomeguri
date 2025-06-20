@@ -14,7 +14,7 @@ class ItineraryBlocksController < ApplicationController
     @block = @itinerary.itinerary_blocks.create!(
       place:       place,
       description: block_params[:description],
-      starttime:   block_params[:starttime],
+      starttime:   parse_time(block_params[:starttime]),
       position:    @itinerary.itinerary_blocks.maximum(:position).to_i + 1
     )
 
@@ -27,7 +27,10 @@ class ItineraryBlocksController < ApplicationController
 
   # PATCH /itinerary_blocks/:id
   def update
-    if @block.update(block_params.slice(:description, :starttime))
+    if @block.update(
+        description: block_params[:description],
+        starttime:   parse_time(block_params[:starttime])
+      )
       head :ok
     else
       head :unprocessable_entity
@@ -39,25 +42,31 @@ class ItineraryBlocksController < ApplicationController
     @block.destroy!
 
     respond_to do |format|
-      format.turbo_stream do
-        render turbo_stream: turbo_stream.remove("block_#{@block.id}")
-      end
-      format.html { redirect_back fallback_location: itinerary_path(@block.itinerary) }
+      format.turbo_stream { render turbo_stream: turbo_stream.remove("block_#{@block.id}") }
+      format.html         { redirect_back fallback_location: itinerary_path(@itinerary) }
     end
   end
 
   private
 
   def set_itinerary
-    @itinerary = Itinerary.find(params[:itinerary_id])
+    @itinerary = current_user.itineraries.find(params[:itinerary_id])
   end
 
   def set_block
-    @block = ItineraryBlock.find(params[:id])
+    @block = @itinerary.itinerary_blocks.find(params[:id])
   end
 
   def block_params
     params.require(:itinerary_block)
           .permit(:google_place_id, :name, :lat, :lng, :description, :starttime)
+  end
+
+  # 文字列(YYYY-MM-DDTHH:MM) → Time.zone
+  def parse_time(raw)
+    return nil if raw.blank?
+    Time.zone.parse(raw.to_s)
+  rescue ArgumentError
+    nil
   end
 end
