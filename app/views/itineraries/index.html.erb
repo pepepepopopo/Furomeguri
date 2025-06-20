@@ -1,4 +1,15 @@
-<div>
-  <h1 class="font-bold text-4xl">Itineraries#index</h1>
-  <p>Find me in app/views/itineraries/index.html.erb</p>
+<div class="flex flex-col space-y-4 p-4 mx-auto">
+  <% @itineraries.each do |itinerary| %>
+    <div class="bg-white border border-gray-200 rounded-lg shadow p-4">
+      <p class="text-base font-medium text-gray-900">
+        <%= itinerary.title %>
+      </p>
+      <% if itinerary.subtitle.present? %>
+        <p class="mt-1 text-sm text-gray-600">
+          <%= itinerary.subtitle %>
+        </p>
+      <% end %>
+      <%= link_to "詳細", itinerary_path(itinerary.id) %>
+    </div>
+  <% end %>
 </div>

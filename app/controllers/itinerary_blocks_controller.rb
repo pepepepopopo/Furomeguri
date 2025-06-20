@@ -36,7 +36,13 @@ class ItineraryBlocksController < ApplicationController
   # DELETE /itinerary_blocks/:id
   def destroy
     @block.destroy!
-    head :ok
+
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.remove("block_#{@block.id}")
+      end
+      format.html { redirect_back fallback_location: itinerary_path(@block.itinerary)}
+    end
   end
 
   private
