@@ -157,16 +157,18 @@ async function setSearchMarkers(places) {
     // クリックされたときの情報ウィンドウ
     marker.addListener('gmp-click', () => {
       infoWindow.setContent(`
-        <strong>${name}</strong>
-        </br>
-        <button id="add_itinerary_button"
-        data-place-id="${place.id}"
-        data-name="${place.displayName.text}"
-        data-lat="${place.location.latitude}"
-        data-lng="${place.location.longitude}"
-        class="mt-2 px-3 py-1 bg-orange-400 text-white rounded hover:bg-orange-500">
-          +旅程追加!
-        </button>
+        <strong>${name}</strong><br>
+        ${window.currentUserLoggedIn
+          ? `<button id="add_itinerary_button"
+                      data-place-id="${place.id}"
+                      data-name="${place.displayName.text}"
+                      data-lat="${place.location.latitude}"
+                      data-lng="${place.location.longitude}"
+                      class="mt-2 px-3 py-1 bg-orange-400 text-white rounded hover:bg-orange-500">
+            +旅程追加!
+          </button>`
+          : ''
+        }
       `);
       infoWindow.open(window.map, marker);
     });

@@ -12,12 +12,14 @@
     <nav class="ml-auto flex flex-wrap items-center gap-3 text-base">
       <% if user_signed_in? %>
         <%= link_to '旅程一覧', itineraries_path,
-              class: "nav-btn" %>
+              class: "inline-flex items-center bg-orange-300 py-1 px-3 rounded text-lime-900 text-sm hover:bg-orange-400" %>
+        <!--
         <%= link_to current_user.email, "#",
-              class: "nav-btn" %>
+              class: "inline-flex items-center bg-orange-300 py-1 px-3 rounded text-lime-900 text-sm hover:bg-orange-400" %>
+        -->
         <%= link_to 'ログアウト', destroy_user_session_path,
-              data: { turbo_method: :delete },
-              class: "nav-btn" %>
+              method: :delete,
+              class: "inline-flex items-center bg-orange-300 py-1 px-3 rounded text-lime-900 text-sm hover:bg-orange-400" %>
       <% else %>
         <%= link_to '新規登録', new_user_registration_path, class: "inline-flex items-center bg-orange-300 py-1 px-3 rounded text-lime-900 text-sm hover:bg-orange-400" %>
         <%= link_to 'ログイン', user_session_path,         class: "inline-flex items-center bg-orange-300 py-1 px-3 rounded text-lime-900 text-sm hover:bg-orange-400" %>

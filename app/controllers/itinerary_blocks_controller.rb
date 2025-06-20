@@ -1,4 +1,5 @@
 class ItineraryBlocksController < ApplicationController
+  before_action :authenticate_user!
   before_action :set_itinerary
   before_action :set_block, only: %i[update destroy]
 
