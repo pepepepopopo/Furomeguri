@@ -61,3 +61,5 @@ gem "tailwindcss-ruby", "3.4.17"
 
 gem "devise"
 gem "dotenv-rails"
+
+gem 'rails-i18n'
