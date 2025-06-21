@@ -1,6 +1,6 @@
 class ItinerariesController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_itinerary, only: %i[edit update show destroy]
+  before_action :set_itinerary, only: %i[edit update show]
 
   def index
     @itineraries = current_user.itineraries.order(created_at: :desc)
@@ -59,7 +59,8 @@ class ItinerariesController < ApplicationController
   end
 
   def destroy
-    @itinerary.destroy!
+    itinerary = current_user.itineraries.find(params[:id])
+    itinerary.destroy!
     redirect_to itineraries_path, notice: "削除しました", status: :see_other
   end
 
