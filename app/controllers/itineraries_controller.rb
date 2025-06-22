@@ -29,33 +29,35 @@ class ItinerariesController < ApplicationController
   end
 
   def update
-    ActiveRecord::Base.transaction do
-      itinerary_blocks_params.each do |attrs|
-        # 何も変更が無ければスキップ
-        next if attrs[:description].blank? && attrs[:starttime].blank? && attrs[:_destroy].blank?
+    @itinerary.update!(itinerary_params)
+    if params[:blocks].present?
+      ActiveRecord::Base.transaction do
+        itinerary_blocks_params.each do |attrs|
+          # 何も変更が無ければスキップ
+          next if attrs[:description].blank? && attrs[:starttime].blank? && attrs[:_destroy].blank?
 
-        if ActiveModel::Type::Boolean.new.cast(attrs[:_destroy])
-          @itinerary.itinerary_blocks.find_by(id: attrs[:id])&.destroy!
-          next
-        end
+          if ActiveModel::Type::Boolean.new.cast(attrs[:_destroy])
+            @itinerary.itinerary_blocks.find_by(id: attrs[:id])&.destroy!
+            next
+          end
 
-        if attrs[:id].present?
-          @itinerary.itinerary_blocks.find(attrs[:id]).update!(
-            description: attrs[:description],
-            starttime:   parse_time(attrs[:starttime])
-          )
-        else
-          place = find_or_create_place(attrs)
-          @itinerary.itinerary_blocks.create!(
-            place:       place,
-            description: attrs[:description],
-            starttime:   parse_time(attrs[:starttime])
-          )
+          if attrs[:id].present?
+            @itinerary.itinerary_blocks.find(attrs[:id]).update!(
+              description: attrs[:description],
+              starttime:   parse_time(attrs[:starttime])
+            )
+          else
+            place = find_or_create_place(attrs)
+            @itinerary.itinerary_blocks.create!(
+              place:       place,
+              description: attrs[:description],
+              starttime:   parse_time(attrs[:starttime])
+            )
+          end
         end
       end
     end
-
-    redirect_to itinerary_path(@itinerary), notice: "更新しました"
+    redirect_to itineraries_path, notice: "更新しました"
   end
 
   def destroy
