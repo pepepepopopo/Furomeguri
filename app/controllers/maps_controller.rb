@@ -78,11 +78,9 @@ class MapsController < ApplicationController
 
     if response.code == "200"
       searched_location = JSON.parse(response.body)
-      Rails.logger.info "✅ Parsed places: #{searched_location}"
       searched_location
     else
       @error = "API request failed with status code: #{response.code}"
-      Rails.logger.error "❌ #{@error}"
       render json: { error: @error }, status: :internal_server_error
     end
   end

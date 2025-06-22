@@ -117,7 +117,6 @@ document.addEventListener('turbo:load', () => {
     // FormData→URLパラメータ化
     const formData = new FormData(form);
     const textQueryParams = new URLSearchParams(formData).toString();
-    console.log("fetch url: ", `/maps/location_search?${textQueryParams}`);
     const selectedLocation = formData.get("location");
     await setMapCenterToSelectedLocation(selectedLocation);
 
@@ -128,10 +127,8 @@ document.addEventListener('turbo:load', () => {
       });
       if (!response.ok) throw new Error("通信に失敗しました");
       const data = await response.json();
-      console.log("検索結果:", data);
       setSearchMarkers(data.places)
     } catch (error) {
-      console.error("Fetch エラー:", error);
     }
   });
 });
@@ -223,10 +220,8 @@ document.addEventListener('turbo:load', () => {
         const streamHtml = await response.text();
         Turbo.renderStreamMessage(streamHtml);
       } else {
-        console.log("追加失敗", await response.text());
       }
     } catch (error) {
-      console.error('旅程追加に失敗しました', error);
       addItineraryButton.disabled = false;
     }
   };
