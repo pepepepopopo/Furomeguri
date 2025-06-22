@@ -57,7 +57,7 @@ class ItinerariesController < ApplicationController
         end
       end
     end
-    redirect_to itineraries_path, notice: '更新しました'
+    redirect_to itineraries_path, notice: "更新しました"
   end
 
   def destroy
