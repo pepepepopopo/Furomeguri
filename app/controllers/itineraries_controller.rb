@@ -12,6 +12,7 @@ class ItinerariesController < ApplicationController
 
   def create
     @itinerary = current_user.itineraries.build(itinerary_params)
+    @itinerary.title = "タイトル未定" if @itinerary.title.blank?
     if @itinerary.save
       redirect_to edit_itinerary_path(@itinerary), notice: "新規旅行計画を作成しました"
     else
