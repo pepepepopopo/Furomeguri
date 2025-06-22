@@ -10,7 +10,7 @@
         <div>
           <%= f.label :title, "タイトル", class: "block text-sm/6 font-medium text-gray-900" %>
           <div class="mt-2">
-            <%= f.text_field :title, class: "block w-full rounded-md px-3 py-1.5 text-base text-gray-900 border border-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+            <%= f.text_field :title, value: "", placeholder: f.object.title.presence, class: "block w-full rounded-md px-3 py-1.5 text-base text-gray-900 border border-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
           </div>
         </div>
 
