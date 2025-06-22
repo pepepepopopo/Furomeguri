@@ -13,20 +13,22 @@
                   sm:translate-x-0 sm:relative sm:inset-auto
                   transition-transform duration-300 ease-in-out
                   z-40">
-
-      <!-- タイトル -->
-      <div class="p-4 border-b border-gray-200">
-        <h2 class="text-lg font-bold break-words"><%= @itinerary.title %></h2>
-        <% if @itinerary.subtitle.present? %>
-          <p class="mt-1 text-sm text-gray-500 break-words"><%= @itinerary.subtitle %></p>
-        <% end %>
+      <!-- タイトル & サブタイトル入力  -->
+      <div class="p-4 border-b border-gray-200 space-y-2">
+        <!-- タイトル -->
+        <%= text_field_tag 'itinerary[title]',
+                          @itinerary.title,
+                          class: 'w-full border-gray-300 rounded-md text-lg font-bold' %>
+        <!-- サブタイトル -->
+        <%= text_field_tag 'itinerary[subtitle]',
+                          @itinerary.subtitle.presence || '',
+                          placeholder: 'サブタイトル（任意）',
+                          class: 'w-full border-gray-300 rounded-md text-sm text-gray-600' %>
       </div>
-
       <!-- ブロック一覧 -->
       <div id="sidebar-items" class="flex-1 divide-y divide-gray-100">
         <%= render partial: 'shared/block', collection: blocks, as: :block %>
       </div>
-
       <!-- フッター -->
       <div class="p-4 border-t border-gray-200">
         <%= submit_tag '旅程を保存',
