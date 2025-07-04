@@ -8,7 +8,7 @@ module ApplicationHelper
       description: "旅行先の選定から予定作成までを一貫してアプリ上でできます！",
       keywords: "温泉,旅行,旅行計画",
       canonical: request.original_url,
-      separator: "|",　
+      separator: "|",
       # icon: [
       #   { href: image_url("logo.png") },
       #   { href: image_url("top_image.png"), rel: "apple-touch-icon", sizes: "180x180", type: "image/png" },
@@ -19,7 +19,7 @@ module ApplicationHelper
         description: :description,
         type: "website",
         url: request.original_url,
-        image: image_url("ogp.jpg"),# 配置するパスやファイル名によって変更する
+        image: image_url("ogp.jpg"), # 配置するパスやファイル名によって変更する
         local: "ja-JP",
       },
       twitter: {
