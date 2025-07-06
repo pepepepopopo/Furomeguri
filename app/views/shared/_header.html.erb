@@ -11,6 +11,7 @@
     <!-- ナビ -->
     <nav class="ml-auto flex flex-wrap items-center gap-3 text-base">
       <% if user_signed_in? %>
+        <%= link_to "旅程作成!", new_itinerary_path, class: "inline-flex items-center bg-orange-300 px-4 py-2 rounded text-lime-900 text-sm bg-orange-400 rounded shadow" %>
         <%= link_to '旅程一覧', itineraries_path,
               class: "inline-flex items-center bg-orange-300 py-1 px-3 rounded text-lime-900 text-sm hover:bg-orange-400" %>
         <!--
