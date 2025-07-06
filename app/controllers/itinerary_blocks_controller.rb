@@ -3,7 +3,6 @@ class ItineraryBlocksController < ApplicationController
   before_action :set_itinerary
   before_action :set_block, only: %i[update destroy]
 
-  # POST /itineraries/:itinerary_id/itinerary_blocks
   def create
     place = Place.find_or_create_by!(google_place_id: block_params[:google_place_id]) do |p|
       p.name = block_params[:name]
@@ -25,7 +24,6 @@ class ItineraryBlocksController < ApplicationController
     )
   end
 
-  # PATCH /itinerary_blocks/:id
   def update
     if @block.update(
         description: block_params[:description],
