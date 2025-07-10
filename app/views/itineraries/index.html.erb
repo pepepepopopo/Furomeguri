@@ -1,17 +1,17 @@
-<div class="flex flex-col space-y-4 p-4 mx-auto">
+<div class="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-max p-4 mx-auto">
   <% @itineraries.each do |itinerary| %>
-    <div class="bg-white border border-gray-200 rounded-lg shadow p-4">
-      <p class="text-base font-medium text-gray-900">
-        <%= itinerary.title %>
-      </p>
-      <% if itinerary.subtitle.present? %>
-        <p class="mt-1 text-sm text-gray-600">
-          <%= itinerary.subtitle %>
-        </p>
-      <% end %>
-      <%= link_to "詳細", itinerary_path(itinerary.id), class:"bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full" %>
-      <%= link_to "編集", edit_itinerary_path(itinerary.id), class:"bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full" %>
-      <%= link_to "削除", itinerary, data: { turbo_method: :delete } %>
+    <div class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-shadow duration-300 border border-gray-200 overflow-hidden flex flex-col min-h-60">
+      <div class="p-6 flex flex-col flex-1">
+        <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors"><%= itinerary.title %></h3>
+        <% if itinerary.subtitle.present? %>
+          <p class="mt-2 text-sm text-gray-500"><%= itinerary.subtitle %></p>
+        <% end %>
+        <div class="mt-auto flex gap-2 flex-wrap">
+          <%= link_to "詳細", itinerary_path(itinerary), class: "h-9 inline-flex items-center px-4 py-2 text-sm font-medium rounded-full bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+          <%= link_to "編集", edit_itinerary_path(itinerary), class: "h-9 inline-flex items-center px-4 py-2 text-sm font-medium rounded-full bg-green-600 text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500" %>
+          <%= link_to "削除", itinerary, data: { turbo_method: :delete, turbo_confirm: "本当に削除しますか？" }, class: "h-9 inline-flex items-center px-4 py-2 text-sm font-medium rounded-full bg-red-600 text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500" %>
+        </div>
+      </div>
     </div>
   <% end %>
 </div>

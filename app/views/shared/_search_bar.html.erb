@@ -21,9 +21,9 @@
       <!-- accommodation_type -->
       <div class="relative dropdown-container">
         <button type="button" class="dropdown-button py-2.5 px-4 bg-gray-100 border border-gray-300 rounded-lg text-sm" data-target="accommodation_type">
-          <%= @accommodation_type.present? ? @accommodation_type : "旅館・ホテル" %>
+          <%= @accommodation_type.present? ? @accommodation_type : "旅館ホテル" %>
         </button>
-        <input type="hidden" name="accommodation_type" id="accommodation_type" value="<%= @accommodation_type || '旅館・ホテル' %>">
+        <input type="hidden" name="accommodation_type" id="accommodation_type" value="<%= @accommodation_type || '旅館ホテル' %>">
         <div class="dropdown-menu hidden absolute mt-1 w-44 bg-white rounded-lg shadow z-20">
           <ul class="text-sm text-gray-700">
             <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">旅館ホテル</button></li>
@@ -35,9 +35,9 @@
       <!-- poi_type -->
       <div class="relative dropdown-container">
         <button type="button" class="dropdown-button py-2.5 px-4 bg-gray-100 border border-gray-300 rounded-lg text-sm" data-target="poi_type">
-          <%= @poi_type.present? ? @poi_type : "飲食・観光地" %>
+          <%= @poi_type.present? ? @poi_type : "飲食観光地" %>
         </button>
-        <input type="hidden" name="poi_type" id="poi_type" value="<%= @poi_type || '飲食・観光地' %>">
+        <input type="hidden" name="poi_type" id="poi_type" value="<%= @poi_type || '飲食観光地' %>">
         <div class="dropdown-menu hidden absolute mt-1 w-44 bg-white rounded-lg shadow z-20">
           <ul class="text-sm text-gray-700">
             <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">飲食観光地</button></li>
