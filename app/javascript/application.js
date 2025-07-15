@@ -83,9 +83,11 @@ if (!window.initMap) {
 }
 
 // 既存検索結果マーカーをクリア
-const clearSearchMarkers = () => {
-  searchMarkers.forEach(m => (m.map = null));
-  searchMarkers = [];
+const clearMarkers = () => {
+  if(marker != null){
+    marker.setMap(null);
+  }
+  marker = null;
 }
 
 // 選択されたlocationを中心にマップを調整
@@ -134,7 +136,6 @@ document.addEventListener('turbo:load', () => {
 });
 // マーカー設置(情報ウィンドウ付き)
 async function setSearchMarkers(places) {
-  clearSearchMarkers();
   if (!window.map) return;
 
   const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary('marker');
