@@ -59,7 +59,6 @@ if (!window.initMap) {
     const mapDev = document.getElementById("map");
     if(!mapDev) return;
     const { Map } = await google.maps.importLibrary("maps");
-    const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
 
     // デフォルトの中心位置(東京駅)
     const mapElement = document.getElementById("map");
@@ -69,25 +68,32 @@ if (!window.initMap) {
       mapId: 'af2da9c1c44ffaf9d071b583',
     })
 
-    // seed値の場所にピンを打つ
-    const locations = await fetchDefaultLocations();
-    locations.forEach(location => {
-      const pinCustom = new PinElement({ glyphColor: 'white' });
-      new AdvancedMarkerElement({
-        map: map,
-        position: { lat: location.lat, lng: location.lng },
-        content: pinCustom.element,
-      });
-    });
+    await setDefaultMarker();
   };
 }
 
-// 既存検索結果マーカーをクリア
+let defaultMarkers = [];
+// seed値の場所にピンを打つ
+async function setDefaultMarker () {
+  const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
+  const locations = await fetchDefaultLocations();
+  locations.forEach(location => {
+    const pinCustom = new PinElement({ glyphColor: 'white' });
+    const defaultMarker = new AdvancedMarkerElement({
+      map: map,
+      position: { lat: location.lat, lng: location.lng },
+      content: pinCustom.element,
+    });
+    defaultMarkers.push(defaultMarker)
+  });
+}
+
+// Seedマーカーをクリア
 const clearMarkers = () => {
-  if(marker != null){
-    marker.setMap(null);
-  }
-  marker = null;
+  defaultMarkers.forEach(defaultMarker => {
+    defaultMarker.map = null;
+  })
+  defaultMarkers = [];
 }
 
 // 選択されたlocationを中心にマップを調整
@@ -121,6 +127,7 @@ document.addEventListener('turbo:load', () => {
     const textQueryParams = new URLSearchParams(formData).toString();
     const selectedLocation = formData.get("location");
     await setMapCenterToSelectedLocation(selectedLocation);
+    clearMarkers();
 
     try {
       const response = await fetch(`/maps/location_search?${textQueryParams}`, {
@@ -129,12 +136,13 @@ document.addEventListener('turbo:load', () => {
       });
       if (!response.ok) throw new Error("通信に失敗しました");
       const data = await response.json();
+      // マーカーを作成
       setSearchMarkers(data.places)
     } catch (error) {
     }
   });
 });
-// マーカー設置(情報ウィンドウ付き)
+// マーカー作成(情報ウィンドウ付き)
 async function setSearchMarkers(places) {
   if (!window.map) return;
 
@@ -145,7 +153,7 @@ async function setSearchMarkers(places) {
     const { latitude: lat, longitude: lng } = place.location;
     const name = place.displayName?.text || '名称未設定';
 
-    const marker = new AdvancedMarkerElement({
+    const searchMarker = new AdvancedMarkerElement({
       map: window.map,
       position: { lat, lng },
       title: name,
@@ -153,7 +161,7 @@ async function setSearchMarkers(places) {
     });
 
     // クリックされたときの情報ウィンドウ
-    marker.addListener('gmp-click', () => {
+    searchMarker.addListener('gmp-click', () => {
       infoWindow.setContent(`
         <strong>${name}</strong><br>
         ${window.currentUserLoggedIn
@@ -168,10 +176,10 @@ async function setSearchMarkers(places) {
           : ''
         }
       `);
-      infoWindow.open(window.map, marker);
+      infoWindow.open(window.map, searchMarker);
     });
 
-    searchMarkers.push(marker);
+    searchMarkers.push(searchMarker);
   });
 }
 
