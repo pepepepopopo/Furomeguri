@@ -6,8 +6,17 @@ class ItinerariesController < ApplicationController
     @itineraries = current_user.itineraries.order(created_at: :desc)
   end
 
+  def show
+    @blocks = @itinerary.itinerary_blocks.includes(:place).order(:created_at)
+  end
+
   def new
     @itinerary = current_user.itineraries.new
+  end
+
+  def edit
+    @default_locations = DefaultLocation.all
+    @blocks            = @itinerary.itinerary_blocks
   end
 
   def create
@@ -18,15 +27,6 @@ class ItinerariesController < ApplicationController
     else
       render :new, status: :unprocessable_entity
     end
-  end
-
-  def show
-    @blocks = @itinerary.itinerary_blocks.includes(:place).order(:created_at)
-  end
-
-  def edit
-    @default_locations = DefaultLocation.all
-    @blocks            = @itinerary.itinerary_blocks
   end
 
   def update
@@ -45,14 +45,14 @@ class ItinerariesController < ApplicationController
           if attrs[:id].present?
             @itinerary.itinerary_blocks.find(attrs[:id]).update!(
               description: attrs[:description],
-              starttime:   parse_time(attrs[:starttime])
+              starttime: parse_time(attrs[:starttime])
             )
           else
             place = find_or_create_place(attrs)
             @itinerary.itinerary_blocks.create!(
-              place:       place,
+              place: place,
               description: attrs[:description],
-              starttime:   parse_time(attrs[:starttime])
+              starttime: parse_time(attrs[:starttime])
             )
           end
         end
@@ -101,6 +101,7 @@ class ItinerariesController < ApplicationController
   # 文字列(YYYY-MM-DDTHH:MM) → Time.zone
   def parse_time(raw)
     return nil if raw.blank?
+
     Time.zone.parse(raw.to_s)
   rescue ArgumentError
     nil

@@ -11,24 +11,24 @@ class ItineraryBlocksController < ApplicationController
     end
 
     @block = @itinerary.itinerary_blocks.create!(
-      place:       place,
+      place: place,
       description: block_params[:description],
-      starttime:   parse_time(block_params[:starttime]),
-      position:    @itinerary.itinerary_blocks.maximum(:position).to_i + 1
+      starttime: parse_time(block_params[:starttime]),
+      position: @itinerary.itinerary_blocks.maximum(:position).to_i + 1
     )
 
     render turbo_stream: turbo_stream.append(
       "sidebar-items",
       partial: "shared/block",
-      locals:  { block: @block }
+      locals: { block: @block }
     )
   end
 
   def update
     if @block.update(
-        description: block_params[:description],
-        starttime:   parse_time(block_params[:starttime])
-      )
+      description: block_params[:description],
+      starttime: parse_time(block_params[:starttime])
+    )
       head :ok
     else
       head :unprocessable_entity
@@ -57,12 +57,13 @@ class ItineraryBlocksController < ApplicationController
 
   def block_params
     params.require(:itinerary_block)
-          .permit(:google_place_id, :name, :lat, :lng, :description, :starttime)
+      .permit(:google_place_id, :name, :lat, :lng, :description, :starttime)
   end
 
   # 文字列(YYYY-MM-DDTHH:MM) → Time.zone
   def parse_time(raw)
     return nil if raw.blank?
+
     Time.zone.parse(raw.to_s)
   rescue ArgumentError
     nil

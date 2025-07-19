@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   devise_for :users
 
-  resources :maps, only: [ :index ] do
+  resources :maps, only: [:index] do
     collection do
       get "location_search"
     end
@@ -20,6 +20,6 @@ Rails.application.routes.draw do
   root "maps#index"
 
   namespace :api do
-    resources :default_locations, only: [ :index ]
+    resources :default_locations, only: [:index]
   end
 end
