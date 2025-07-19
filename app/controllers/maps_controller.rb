@@ -24,34 +24,30 @@ class MapsController < ApplicationController
   private
 
   def text_search(location, accommodation_type, poi_type, keyword)
-    api_key = ENV["GOOGLE_PLACE_API_KEY"] # 環境変数からAPIキーを取得
+    api_key = ENV.fetch("GOOGLE_PLACE_API_KEY", nil) # 環境変数からAPIキーを取得
     uri = URI.parse("https://places.googleapis.com/v1/places:searchText")
 
     # 引数をリクエストボディ用に加工
     # 緯度
-    locationLatitude = DefaultLocation.find_by(name: location).lat
+    location_latitude = DefaultLocation.find_by(name: location).lat
     # 経度
-    locationLongitude = DefaultLocation.find_by(name: location).lng
+    location_longitude = DefaultLocation.find_by(name: location).lng
     # 宿泊施設タイプをtextQueryに設定
-    if accommodation_type == "旅館・ホテル"
-      textQuery_accommodation = "ホテル,旅館"
-    end
+    textquery_accommodation = "ホテル,旅館" if accommodation_type == "旅館・ホテル"
     # 周辺施設タイプをtextQueryに設定
-    if poi_type == "飲食・観光地"
-      textQuery_poi_type = "飲食,観光地"
-    end
+    textquery_poi_type = "飲食,観光地" if poi_type == "飲食・観光地"
     # textQueryの作成
-    textQuery_keyword = "#{textQuery_accommodation},#{textQuery_poi_type},#{keyword}"
+    textquery_keyword = "#{textquery_accommodation},#{textquery_poi_type},#{keyword}"
     # リクエストボディの構築
     request_body = {
-      textQuery: textQuery_keyword,
+      textQuery: textquery_keyword,
       pageSize: 20,
       languageCode: "ja",
       locationBias: {
         circle: {
           center: {
-            latitude: locationLatitude,
-            longitude: locationLongitude
+            latitude: location_latitude,
+            longitude: location_longitude
           },
           radius: 500.0
         }
@@ -74,11 +70,11 @@ class MapsController < ApplicationController
 
     # リクエストの送信とレスポンスの処理
     response = http.request(request)
-    response_body = response.body.force_encoding("UTF-8")
+    response.body.force_encoding("UTF-8")
 
     if response.code == "200"
-      searched_location = JSON.parse(response.body)
-      searched_location
+      JSON.parse(response.body)
+
     else
       @error = "API request failed with status code: #{response.code}"
       render json: { error: @error }, status: :internal_server_error

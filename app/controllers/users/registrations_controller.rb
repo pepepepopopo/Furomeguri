@@ -5,33 +5,19 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # before_action :configure_account_update_params, only: [:update]
 
   # GET /resource/sign_up
-  def new
-    super
-  end
+
+  # GET /resource/edit
 
   # POST /resource
   def create
     super do |resource|
-      if resource.errors.any?
-        flash[:alert] = I18n.t("devise.registrations.failure")
-      end
+      flash[:alert] = I18n.t("devise.registrations.failure") if resource.errors.any?
     end
   end
 
-  # GET /resource/edit
-  def edit
-    super
-  end
-
   # PUT /resource
-  def update
-    super
-  end
 
   # DELETE /resource
-  def destroy
-    super
-  end
 
   # GET /resource/cancel
   # Forces the session data which is usually expired after sign
