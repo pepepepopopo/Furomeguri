@@ -1,18 +1,18 @@
 class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
-        :recoverable, :rememberable, :validatable,
-        :omniauthable, omniauth_providers: [:google_oauth2]
-        has_many :itineraries, dependent: :destroy
+         :recoverable, :rememberable, :validatable,
+         :omniauthable, omniauth_providers: [:google_oauth2]
+  has_many :itineraries, dependent: :destroy
 
-        has_many :live_room
-        has_many :messages
-        validates :name, presence: true
-        validates :name, presence: true, uniqueness: { case_sensitive: false }
+  has_many :live_room, dependent: :destroy
+  has_many :messages, dependent: :destroy
+  validates :name, presence: true
+  validates :name, presence: true, uniqueness: { case_sensitive: false }
 
-        has_one_attached :avatar
-        attr_accessor :remove_avatar
+  has_one_attached :avatar
+  attr_accessor :remove_avatar
 
-        validates :uid, presence: true, uniqueness: { scope: :provider }, if: -> { uid.present? }
+  validates :uid, presence: true, uniqueness: { scope: :provider }, if: -> { uid.present? }
 
   def self.from_omniauth(auth)
     where(provider: auth.provider, uid: auth.uid).first_or_create do |user|
