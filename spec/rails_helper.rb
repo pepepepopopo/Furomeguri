@@ -39,15 +39,15 @@ RSpec.configure do |config|
 
   # devise google認証用設定
   OmniAuth.configure do |c|
-  c.test_mode = true
-  c.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new({
-    provider: "google_oauth2",
-    uid: "12345abcde",
-    info: {
-      email: "john@example.com",
-    }
-  })
-end
+    c.test_mode = true
+    c.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new({
+                                                           provider: "google_oauth2",
+                                                           uid: "12345abcde",
+                                                           info: {
+                                                             email: "john@example.com"
+                                                           }
+                                                         })
+  end
 
   config.filter_rails_from_backtrace!
   # arbitrary gems may also be filtered via:
