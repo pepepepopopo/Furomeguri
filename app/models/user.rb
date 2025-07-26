@@ -6,8 +6,8 @@ class User < ApplicationRecord
 
   has_many :live_room, dependent: :destroy
   has_many :messages, dependent: :destroy
-  validates :name, presence: true
-  validates :name, presence: true, uniqueness: { case_sensitive: false }
+  validates :email, presence: true
+  validates :email, uniqueness: true
 
   has_one_attached :avatar
   attr_accessor :remove_avatar
