@@ -88,3 +88,13 @@ Rails/I18nLocaleTexts:
 # before_actionの際の未定義メソッドのチェック（deviseとの兼ね合いで一旦false）
 Rails/LexicallyScopedActionFilter:
   Enabled: false
+
+# webdriverの設定のために以下3つを無効化
+Rails/RootPathnameMethods:
+  Enabled: false
+
+Rails/FilePath:
+  Enabled: false
+
+Lint/RedundantDirGlobSort:
+  Enabled: false

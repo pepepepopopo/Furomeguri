@@ -7,7 +7,7 @@ abort("The Rails environment is running in production mode!") if Rails.env.produ
 
 require 'rspec/rails'
 
-Dir[Rails.root.join('spec', 'support', '**', '*.rb')].sort.each { |f| require f }
+Dir[Rails.root.join("spec/support/**/*.rb")].sort.each { |f| require f }
 
 begin
   ActiveRecord::Migration.maintain_test_schema!
@@ -32,6 +32,22 @@ RSpec.configure do |config|
     Capybara.app_host = "http://#{Capybara.server_host}:#{Capybara.server_port}"
     Capybara.ignore_hidden_elements = false
   end
+
+  config.include Devise::Test::IntegrationHelpers, type: :request
+  config.include Devise::Test::ControllerHelpers, type: :controller
+  config.include Devise::Test::ControllerHelpers, type: :view
+
+  # devise google認証用設定
+  OmniAuth.configure do |c|
+  c.test_mode = true
+  c.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new({
+    provider: "google_oauth2",
+    uid: "12345abcde",
+    info: {
+      email: "john@example.com",
+    }
+  })
+end
 
   config.filter_rails_from_backtrace!
   # arbitrary gems may also be filtered via:
