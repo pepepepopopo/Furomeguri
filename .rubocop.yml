@@ -98,3 +98,6 @@ Rails/FilePath:
 
 Lint/RedundantDirGlobSort:
   Enabled: false
+
+Style/FetchEnvVar:
+  Enabled: false
