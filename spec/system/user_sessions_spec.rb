@@ -1,9 +1,40 @@
 require 'rails_helper'
 
 RSpec.describe "UserSessions", type: :system do
-  before do
-    driven_by(:rack_test)
-  end
+  include LoginMacros
+  let(:user) { create(:user) }
 
-  pending "add some scenarios (or delete) #{__FILE__}"
+  describe "ログイン前" do
+    context "フォームの入力値が正常" do
+      it "ログインが成功する(通常フォーム)" do
+        visit user_session_path
+        fill_in "Eメール", with: user.email
+        fill_in "パスワード", with: user.password
+        find('#form_login_button').click
+        expect(page).to have_content("ログインしました。")
+      end
+    end
+    context "フォームが未入力" do
+      it "ログイン失敗" do
+        visit user_session_path
+        fill_in "Eメール", with: ""
+        fill_in "パスワード", with: ""
+        find('#form_login_button').click
+        expect(page).to have_content("Eメールまたはパスワードが違います。")
+      end
+    end
+  end
+  describe "ログイン後" do
+    context "ログアウトボタンのクリック" do
+      it "ログアウト" do
+        visit user_session_path
+        fill_in "Eメール", with: user.email
+        fill_in "パスワード", with: user.password
+        find('#form_login_button').click
+        click_on "ログアウト"
+        expect(page).to have_content "ログアウトしました。"
+        expect(current_path).to eq root_path
+      end
+    end
+  end
 end

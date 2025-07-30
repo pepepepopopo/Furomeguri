@@ -11,8 +11,27 @@ RSpec.describe "Users", type: :system do
           fill_in "Eメール", with: "email@example.com"
           fill_in "パスワード", with: "password"
           fill_in "パスワード（確認用）", with: "password"
-          click_button "新規登録"
+          find('#form_signin_button').click
           expect(page).to have_content "アカウント登録が完了しました。"
+        end
+      end
+      context "フォーム入力値が異常なため登録失敗" do
+        it "メールアドレスが未入力" do
+          visit new_user_registration_path
+          fill_in "Eメール", with: ""
+          fill_in "パスワード", with: "password"
+          fill_in "パスワード（確認用）", with: "password"
+          find('#form_signin_button').click
+          expect(page).to have_content "Eメールを入力してください"
+        end
+        it "使用済みのメールアドレスを使用" do
+          existed_user = create(:user)
+          visit new_user_registration_path
+          fill_in "Eメール", with: existed_user.email
+          fill_in "パスワード", with: "password"
+          fill_in "パスワード（確認用）", with: "password"
+          find('#form_signin_button').click
+          expect(page).to have_content "Eメールはすでに存在します"
         end
       end
     end

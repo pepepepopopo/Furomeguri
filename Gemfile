@@ -58,7 +58,7 @@ group :test do
   gem "capybara"
   gem "rspec-rails"
   gem "factory_bot_rails"
-  gem "webdrivers"
+  gem "selenium-webdriver"
 end
 
 gem "tailwindcss-rails"
