@@ -32,7 +32,7 @@ RSpec.describe "UserSessions", type: :system do
         fill_in "パスワード", with: user.password
         find('#form_login_button').click
         click_on "ログアウト"
-        expect(page).to have_content"ログアウトしました。"
+        expect(page).to have_content "ログアウトしました。"
         expect(current_path).to eq root_path
       end
     end
