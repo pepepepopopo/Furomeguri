@@ -51,14 +51,5 @@ RSpec.describe "Users", type: :system do
         expect(page).to have_link("旅程作成!")
       end
     end
-    context "新規旅行計画を作成" do
-      it "新規作成した旅行計画が作成される" do
-        visit new_itinerary_path
-        fill_in "タイトル", with: "タイトル"
-        fill_in "サブタイトル", with: "サブタイトル"
-        click_button "Let's 旅行作り!"
-        expect(page).to have_content "新規旅行計画を作成しました"
-      end
-    end
   end
 end

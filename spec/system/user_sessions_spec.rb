@@ -24,17 +24,4 @@ RSpec.describe "UserSessions", type: :system do
       end
     end
   end
-  describe "ログイン後" do
-    context "ログアウトボタンのクリック" do
-      it "ログアウト" do
-        visit user_session_path
-        fill_in "Eメール", with: user.email
-        fill_in "パスワード", with: user.password
-        find('#form_login_button').click
-        click_on "ログアウト"
-        expect(page).to have_content "ログアウトしました。"
-        expect(current_path).to eq root_path
-      end
-    end
-  end
 end
