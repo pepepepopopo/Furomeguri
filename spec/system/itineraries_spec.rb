@@ -4,7 +4,7 @@ RSpec.describe "Itineraries", type: :system do
   include LoginMacros
   describe "ログイン後" do
     let(:user) { create(:user) }
-    before { login_as(user)}
+    before { login_as(user) }
     context "新規旅行計画を作成" do
       it "旅行計画が作成される" do
         visit new_itinerary_path
@@ -16,7 +16,7 @@ RSpec.describe "Itineraries", type: :system do
     end
     context "旅行計画を編集できる" do
       let!(:itinerary) { create(:itinerary, user: user) }
-      let!(:itinerary_block) { create(:itinerary_block, itinerary: itinerary)}
+      let!(:itinerary_block) { create(:itinerary_block, itinerary: itinerary) }
       it "編集ボタンで編集画面" do
         visit itineraries_path
         click_link "編集"
