@@ -50,10 +50,6 @@ jobs:
           - 5432:5432
         options: --health-cmd="pg_isready" --health-interval=10s --health-timeout=5s --health-retries=3
 
-      chrome:
-        image: selenium/standalone-chrome:latest
-        ports:
-          - 4444:4444
       # redis:
       #   image: redis
       #   ports:
@@ -72,14 +68,6 @@ jobs:
         with:
           ruby-version: .ruby-version
           bundler-cache: true
-
-      - name: Cache node modules
-        uses: actions/cache@v3
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
 
       - name: Bundler and gem install
         run: |
