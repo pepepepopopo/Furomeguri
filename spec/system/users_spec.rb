@@ -6,16 +6,6 @@ RSpec.describe "Users", type: :system do
 
   describe "ログイン前" do
     describe "ユーザー新規登録" do
-      context "フォームの入力値が正常" do
-        it "ユーザーの新規作成が成功する" do
-          visit new_user_registration_path
-          fill_in "Eメール", with: "email@example.com"
-          fill_in "パスワード", with: "password"
-          fill_in "パスワード（確認用）", with: "password"
-          find('#form_signin_button').click
-          expect(page).to have_content "アカウント登録が完了しました。"
-        end
-      end
       context "フォーム入力値が異常なため登録失敗" do
         it "メールアドレスが未入力" do
           visit new_user_registration_path
@@ -33,6 +23,16 @@ RSpec.describe "Users", type: :system do
           fill_in "パスワード（確認用）", with: "password"
           find('#form_signin_button').click
           expect(page).to have_content "Eメールはすでに存在します"
+        end
+      end
+      context "フォームの入力値が正常" do
+        it "ユーザーの新規作成が成功する" do
+          visit new_user_registration_path
+          fill_in "Eメール", with: "email@example.com"
+          fill_in "パスワード", with: "password"
+          fill_in "パスワード（確認用）", with: "password"
+          find('#form_signin_button').click
+          expect(page).to have_content "アカウント登録が完了しました。"
         end
       end
     end

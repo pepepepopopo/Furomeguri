@@ -14,15 +14,18 @@ RSpec.describe "Itineraries", type: :system do
         expect(page).to have_content "新規旅行計画を作成しました"
       end
     end
-    # context "旅行計画を編集できる" do
-    #   let!(:itinerary) { create(:itinerary, user: user) }
-    #   let!(:itinerary_block) { create(:itinerary_block, itinerary: itinerary)}
-    #   it "編集ボタンで編集画面" do
-    #     visit itineraries_path
-    #     click_link "編集"
-
-    #   end
-    # end
+    context "旅行計画を編集できる" do
+      let!(:itinerary) { create(:itinerary, user: user) }
+      let!(:itinerary_block) { create(:itinerary_block, itinerary: itinerary)}
+      it "編集ボタンで編集画面" do
+        visit itineraries_path
+        click_link "編集"
+        fill_in "itinerary[title]", with: "title(編集)"
+        fill_in "itinerary[subtitle]", with: "subtitle(編集)"
+        click_button "旅程を保存"
+        expect(page).to have_content "更新しました"
+      end
+    end
     context "旅行計画を削除できる" do
       let!(:itinerary) { create(:itinerary, user: user) }
       it "削除ボタン押下で旅行計画が削除される" do
