@@ -30,7 +30,7 @@ RSpec.configure do |config|
       driven_by :selenium_chrome_headless
       Capybara.server_host = '127.0.0.1'
       Capybara.server_port = nil
-      Capybara.app_host     = nil
+      Capybara.app_host = nil
     else
       driven_by :remote_chrome
       Capybara.server_host = IPSocket.getaddress(Socket.gethostname)
