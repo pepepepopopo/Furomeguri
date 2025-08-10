@@ -69,17 +69,17 @@ jobs:
           ruby-version: .ruby-version
           bundler-cache: true
 
-      - name: Set up node
+      - name: Set up Node (Yarn)
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "npm"
+          cache: "yarn"
 
-      - name: Install JS packages
-        run: npm ci
+      - name: Install JS packages (Yarn)
+        run: yarn install
 
       - name: Build JS (esbuild)
-        run: npm run build
+        run: yarn build
 
       - name: Precompile assets
         env:
