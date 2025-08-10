@@ -69,10 +69,22 @@ jobs:
           ruby-version: .ruby-version
           bundler-cache: true
 
-      - name: Bundler and gem install
-        run: |
-          gem install bundler
-          bundle install --jobs 4 --retry 3 --path vendor/bundle
+      - name: Set up node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install JS packages
+        uses: npm ci
+
+      - name: Build JS (esbuild)
+        uses: npm run build
+
+      - name: Precompile assets
+        env:
+          RAILS_ENV: test
+        run: bin/rails assets:precompile
 
       - name: Run tests
         env:
