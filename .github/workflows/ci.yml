@@ -76,10 +76,10 @@ jobs:
           cache: "npm"
 
       - name: Install JS packages
-        uses: npm ci
+        run: npm ci
 
       - name: Build JS (esbuild)
-        uses: npm run build
+        run: npm run build
 
       - name: Precompile assets
         env:
