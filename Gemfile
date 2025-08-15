@@ -71,3 +71,5 @@ gem "dotenv-rails"
 gem "rails-i18n"
 
 gem "meta-tags"
+
+gem "ranked-model"
