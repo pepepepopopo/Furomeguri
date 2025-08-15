@@ -9,6 +9,8 @@
   },
   "dependencies": {
     "@hotwired/stimulus": "^3.2.2",
-    "@hotwired/turbo-rails": "^8.0.13"
+    "@hotwired/turbo-rails": "^8.0.13",
+    "@rails/request.js": "^0.0.12",
+    "sortablejs": "^1.15.6"
   }
 }

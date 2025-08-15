@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_07_22_103033) do
+ActiveRecord::Schema[7.2].define(version: 2025_08_15_072200) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -35,10 +35,10 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_22_103033) do
     t.bigint "place_id", null: false
     t.datetime "starttime"
     t.text "description"
-    t.integer "position"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "itinerary_id", null: false
+    t.integer "row_order"
     t.index ["itinerary_id"], name: "index_itinerary_blocks_on_itinerary_id"
     t.index ["place_id"], name: "index_itinerary_blocks_on_place_id"
   end
