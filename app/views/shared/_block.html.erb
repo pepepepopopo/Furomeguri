@@ -1,29 +1,20 @@
 <turbo-frame id="block_<%= block.id || 'new' %>">
   <div class="p-4 border mb-4">
-
-    <!-- スポット名 -->
+    <span class="drag-handle cursor-grab select-none">🖐️</span>
     <p class="font-medium text-gray-900">
       <%= block.place.name %>
     </p>
-
-    <!-- 説明 -->
     <%= text_area_tag 'blocks[][description]',
                       block.description,
                       class: 'text-sm text-gray-500 truncate w-full',
                       placeholder: '持ち物 etc..' %>
-
-    <!-- 到着時間 (HTML5 datetime-local) -->
     <p class="mt-2 text-gray-700">到着時間</p>
     <%= tag.input type: 'datetime-local',
                   name: 'blocks[][starttime]',
                   value: (block.starttime&.strftime('%Y-%m-%dT%H:%M')),
                   class: 'mt-1 text-xs text-gray-500' %>
-
-    <!-- hidden フィールド -->
     <%= hidden_field_tag 'blocks[][id]',       block.id %>
     <%= hidden_field_tag 'blocks[][_destroy]', '0', class: 'js-destroy-flag' %>
-
-    <!-- 削除リンク（フォーム衝突を避け link_to + data-turbo-method で送信） -->
     <%= link_to '削除',
                 itinerary_itinerary_block_path(block.itinerary, block),
                 data: { turbo_method: :delete,

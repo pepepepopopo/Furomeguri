@@ -1,7 +1,6 @@
 <div class="absolute top-3 left-4 right-4 mx-auto z-20 w-1/2 px-4">
   <form id="location-search-form" class="w-full">
     <div class="flex space-x-2">
-      <!-- location -->
       <div class="relative dropdown-container">
         <button type="button" class="dropdown-button py-2.5 px-4 bg-gray-100 border border-gray-300 rounded-lg text-sm" data-target="location">
           <%= @location.present? ? @location : "温泉地" %>
@@ -17,8 +16,6 @@
           </ul>
         </div>
       </div>
-
-      <!-- accommodation_type -->
       <div class="relative dropdown-container">
         <button type="button" class="dropdown-button py-2.5 px-4 bg-gray-100 border border-gray-300 rounded-lg text-sm" data-target="accommodation_type">
           <%= @accommodation_type.present? ? @accommodation_type : "旅館・ホテル" %>
@@ -31,8 +28,6 @@
           </ul>
         </div>
       </div>
-
-      <!-- poi_type -->
       <div class="relative dropdown-container">
         <button type="button" class="dropdown-button py-2.5 px-4 bg-gray-100 border border-gray-300 rounded-lg text-sm" data-target="poi_type">
           <%= @poi_type.present? ? @poi_type : "飲食・観光地" %>
@@ -45,8 +40,6 @@
           </ul>
         </div>
       </div>
-
-      <!-- keyword -->
       <div class="relative w-full">
         <input type="search" name="keyword" placeholder="検索" value="<%= @keyword %>" class="block p-2.5 w-full text-sm bg-gray-50 border border-gray-300 rounded-lg">
         <button type="submit" class="absolute top-0 end-0 p-2.5 text-white bg-blue-700 rounded-r-lg hover:bg-blue-800">🔍</button>

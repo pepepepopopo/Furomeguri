@@ -1,14 +1,10 @@
 <header class="sticky top-0 z-50 h-14 backdrop-blur bg-lime-200/90 text-gray-600">
   <div class="max-w-7xl mx-auto flex flex-wrap items-center px-4 py-2">
-
-    <!-- ロゴ -->
     <%= link_to root_path,
       class: "flex items-center gap-2 text-lime-900 font-semibold" do %>
       <%= image_tag "Furomeguri_logo.png", class: "h-10 w-auto object-contain" %>
       <span class="text-xl">ふろめぐり</span>
     <% end %>
-
-    <!-- ナビ -->
     <nav class="ml-auto flex flex-wrap items-center gap-3 text-base">
       <% if user_signed_in? %>
         <%= link_to "旅程作成!", new_itinerary_path, class: "inline-flex items-center bg-orange-300 px-4 py-2 rounded text-lime-900 text-sm bg-orange-400 rounded shadow" %>
