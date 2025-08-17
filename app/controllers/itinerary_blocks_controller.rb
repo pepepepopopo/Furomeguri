@@ -13,8 +13,7 @@ class ItineraryBlocksController < ApplicationController
     @block = @itinerary.itinerary_blocks.create!(
       place: place,
       description: block_params[:description],
-      starttime: parse_time(block_params[:starttime]),
-      position: @itinerary.itinerary_blocks.maximum(:position).to_i + 1
+      starttime: parse_time(block_params[:starttime])
     )
 
     render turbo_stream: turbo_stream.append(
