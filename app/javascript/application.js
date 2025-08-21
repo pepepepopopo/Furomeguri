@@ -170,7 +170,7 @@ async function setSearchMarkers(places) {
                       data-name="${place.displayName.text}"
                       data-lat="${place.location.latitude}"
                       data-lng="${place.location.longitude}"
-                      class="mt-2 px-3 py-1 bg-orange-400 text-white rounded hover:bg-orange-500">
+                      class="mt-2 px-3 py-1 bg-orange-400 text-white rounded-xs hover:bg-orange-500">
             +旅程追加!
           </button>`
           : ''

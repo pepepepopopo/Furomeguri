@@ -46,9 +46,9 @@ RSpec.describe "Users", type: :system do
   describe "ログイン後" do
     before { login_as(user) }
     context "ヘッダー表示がログイン後" do
-      it "旅程作成!ボタンが表示される" do
+      it "旅程作成ボタンが表示される" do
         visit root_path
-        expect(page).to have_link("旅程作成!")
+        expect(page).to have_link("旅程作成")
       end
     end
   end
