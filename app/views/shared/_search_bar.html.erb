@@ -1,50 +1,24 @@
 <div class="absolute top-3 left-4 right-4 mx-auto z-20 w-1/2 px-4">
   <form id="location-search-form" class="w-full">
     <div class="flex space-x-2">
-      <!-- location -->
-      <div class="relative dropdown-container">
-        <button type="button" class="dropdown-button py-2.5 px-4 bg-gray-100 border border-gray-300 rounded-lg text-sm" data-target="location">
-          <%= @location.present? ? @location : "温泉地" %>
-        </button>
-        <input type="hidden" name="location" id="location" value="<%= @location %>">
-        <div class="dropdown-menu hidden absolute mt-1 w-44 bg-white rounded-lg shadow-xs z-20">
-          <ul class="text-sm text-gray-700">
-            <% @default_locations.each do |default_location| %>
-              <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">
-                <%= default_location.name %></button>
-              </li>
-            <% end %>
-          </ul>
-        </div>
-      </div>
+        <select name="location" id="location" class="select">
+          <option value="" disabled selected>温泉地</option>
+          <% @default_locations.each do |default_location| %>
+            <option value="<%= default_location.name %>">
+              <%= default_location.name %>
+            </option>
+          <% end %>
+        </select>
 
-      <!-- accommodation_type -->
-      <div class="relative dropdown-container">
-        <button type="button" class="dropdown-button py-2.5 px-4 bg-gray-100 border border-gray-300 rounded-lg text-sm" data-target="accommodation_type">
-          <%= @accommodation_type.present? ? @accommodation_type : "旅館・ホテル" %>
-        </button>
-        <input type="hidden" name="accommodation_type" id="accommodation_type" value="<%= @accommodation_type || '旅館・ホテル' %>">
-        <div class="dropdown-menu hidden absolute mt-1 w-44 bg-white rounded-lg shadow-xs z-20">
-          <ul class="text-sm text-gray-700">
-            <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">旅館・ホテル</button></li>
-            <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">旅館ホテルを含めない</button></li>
-          </ul>
-        </div>
-      </div>
+      <select name="accommodation_type" id="accommodation_type" class="select">
+        <option value="旅館・ホテル" selected>旅館・ホテル</option>
+        <option value="旅館・ホテルを含めない">旅館・ホテルを含めない</option>
+      </select>
 
-      <!-- poi_type -->
-      <div class="relative dropdown-container">
-        <button type="button" class="dropdown-button py-2.5 px-4 bg-gray-100 border border-gray-300 rounded-lg text-sm" data-target="poi_type">
-          <%= @poi_type.present? ? @poi_type : "飲食・観光地" %>
-        </button>
-        <input type="hidden" name="poi_type" id="poi_type" value="<%= @poi_type || '飲食・観光地' %>">
-        <div class="dropdown-menu hidden absolute mt-1 w-44 bg-white rounded-lg shadow-xs z-20">
-          <ul class="text-sm text-gray-700">
-            <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">飲食・観光地</button></li>
-            <li><button type="button" class="block w-full text-left px-4 py-2 hover:bg-gray-100">飲食観光地を含めない</button></li>
-          </ul>
-        </div>
-      </div>
+      <select name="poi_type" id="poi_type" class="select">
+        <option value="飲食・観光地" selected>飲食・観光地</option>
+        <option value="飲食・観光地を含めない" selected>飲食・観光地を含めない</option>
+      </select>
 
       <!-- keyword -->
       <div class="relative w-full">
