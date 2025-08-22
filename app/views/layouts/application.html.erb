@@ -28,10 +28,9 @@
     <script>window.currentUserLoggedIn = <%= user_signed_in? %>;</script>
   </head>
 
-  <body class="flex flex-col min-h-screen bg-gray-50">
+  <body class="flex flex-col min-h-screen">
     <%= render 'shared/header' %>
     <p class="notice"><%= notice %></p>
-    <p class="alert"><%= alert %></p>
     <main class="flex flex-1 min-h-0">
       <%= yield %>
     </main>

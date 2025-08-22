@@ -1,6 +1,6 @@
-<div class="absolute top-3 left-4 right-4 mx-auto z-20 w-1/2 px-4">
+<div class="absolute top-3 left-4 right-4 mx-auto z-20 w-3/5 px-4">
   <form id="location-search-form" class="w-full">
-    <div class="flex space-x-2">
+    <div class="flex">
         <select name="location" id="location" class="select">
           <option value="" disabled selected>温泉地</option>
           <% @default_locations.each do |default_location| %>
@@ -21,10 +21,8 @@
       </select>
 
       <!-- keyword -->
-      <div class="relative w-full">
-        <input type="search" name="keyword" placeholder="検索" value="<%= @keyword %>" class="block p-2.5 w-full text-sm bg-gray-50 border border-gray-300 rounded-lg">
-        <button type="submit" class="absolute top-0 end-0 p-2.5 text-white bg-blue-700 rounded-r-lg hover:bg-blue-800">🔍</button>
-      </div>
+      <input type="search" name="keyword" placeholder="検索" value="<%= @keyword %>" class="input">
+      <input type="submit" value="🔎" class="btn btn-active bg-blue-700" />
     </div>
   </form>
 </div>

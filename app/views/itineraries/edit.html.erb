@@ -1,12 +1,10 @@
-<div class="md:grid md:grid-cols-[1fr_20rem] md:gap-6 flex flex-col flex-1
+<div class="md:grid md:grid-cols-[1fr_20rem] flex flex-col flex-1
             h-[calc(100vh-3.5rem)] overflow-hidden">
 
-  <!-- ===== 左カラム：地図 ===== -->
   <div class="relative min-h-0 md:col-start-1 md:col-end-2">
     <%= render 'shared/map' %>
   </div>
 
-  <!-- ===== 右カラム：サイドバー ===== -->
   <%= render partial: 'shared/sidebar',
             locals: { itinerary: @itinerary, blocks: @itinerary.itinerary_blocks } %>
 </div>
