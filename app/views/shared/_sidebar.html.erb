@@ -12,12 +12,12 @@
         <!-- タイトル -->
         <%= text_field_tag 'itinerary[title]',
                           @itinerary.title,
-                          class: 'w-full border-gray-300 rounded-md text-lg font-bold' %>
+                          class: 'input input-ghost font-bold font-bold text-xl' %>
         <!-- サブタイトル -->
         <%= text_field_tag 'itinerary[subtitle]',
                           @itinerary.subtitle.presence || '',
                           placeholder: 'サブタイトル',
-                          class: 'w-full border-gray-300 rounded-md text-sm text-gray-600' %>
+                          class: 'input input-ghost input-sm text-lg' %>
       </div>
       <!-- ブロック一覧 -->
       <div id="sidebar-items" class="flex-1 divide-y divide-gray-100">
