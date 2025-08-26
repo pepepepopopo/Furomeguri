@@ -3,21 +3,26 @@ import Sortable from "sortablejs"
 
 export default class extends Controller {
   connect() {
+
+    // 子要素確認
+    const draggableElements = this.element.querySelectorAll("turbo-frame")
+
     const options = {
       draggable: "turbo-frame",
-      handle: '.drag-handle',
       animation: 150,
-      forceFallback: true,
-      fallbackOnBody: true,
-      fallbackTolerance: 5,
+      onStart: (evt) => {
+        console.log("[sortable] Started dragging:", evt.item)
+      },
       onEnd: this.onEnd.bind(this)
     }
-    console.log("[sortable] connect on", this.element)
-    Sortable.create(this.element, options)
+    
+    console.log("[sortable] Creating Sortable with options:", options)
+    const sortableInstance = Sortable.create(this.element, options)
+    console.log("[sortable] Sortable instance created:", sortableInstance)
   }
 
   onEnd(evt) {
     const body = { row_order_position: evt.newIndex }
-    console.log(body)
+    console.log("[sortable] Drag ended:", body)
   }
 }

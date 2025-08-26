@@ -2,7 +2,6 @@
 import "@hotwired/turbo-rails"
 import "./controllers"
 
-console.log("APP-ENTRY:", import.meta.url);
 // ドロップダウンの処理（turbo:load の外で一度だけ定義）
 document.addEventListener('click', (e) => {
   const isDropdownButton = e.target.closest('.dropdown-button');
@@ -34,9 +33,16 @@ document.addEventListener('click', (e) => {
   }
 });
 
-// turbo:load で一度だけ初期化したい処理（地図）
+// Google Maps APIの読み込み完了時に呼び出されるコールバック関数
+window.initGoogleMaps = function() {
+  if (document.getElementById("map")) {
+    initMap();
+  }
+};
+
+// turbo:load で地図の再初期化
 document.addEventListener('turbo:load', () => {
-  if (typeof initMap === 'function') {
+  if (typeof google !== 'undefined' && typeof initMap === 'function' && document.getElementById("map")) {
     initMap();
   }
 });
