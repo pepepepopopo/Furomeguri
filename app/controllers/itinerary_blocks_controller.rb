@@ -13,7 +13,7 @@ class ItineraryBlocksController < ApplicationController
     @block = @itinerary.itinerary_blocks.create!(
       place: place,
       description: block_params[:description],
-      starttime: parse_time(block_params[:starttime]),
+      starttime: parse_time(block_params[:starttime])
     )
 
     render turbo_stream: turbo_stream.append(
