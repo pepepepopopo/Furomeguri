@@ -1,7 +1,6 @@
 <div class="flex flex-1 items-center justify-center">
   <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
     <div class="sm:mx-auto sm:w-full sm:max-w-sm">
-      <img class="mx-auto h-10 w-auto" src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600" alt="Your Company">
       <h2 class="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">新しい旅行計画を立てよう!</h2>
     </div>
 
@@ -10,7 +9,7 @@
         <div>
           <%= f.label :title, "タイトル", class: "block text-sm/6 font-medium text-gray-900" %>
           <div class="mt-2">
-            <%= f.text_field :title, value: "", placeholder: f.object.title.presence, class: "block w-full rounded-md px-3 py-1.5 text-base text-gray-900 border border-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+            <%= f.text_field :title, value: "", placeholder: f.object.title.presence, class: "w-full input input-primary" %>
           </div>
         </div>
 
@@ -19,12 +18,12 @@
             <%= f.label :subtitle, "サブタイトル", class: "block text-sm/6 font-medium text-gray-900" %>
           </div>
           <div class="mt-2">
-            <%= f.text_field :subtitle, class: "block w-full rounded-md px-3 py-1.5 text-base text-gray-900 border border-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+            <%= f.text_field :subtitle, class: "w-full input input-primary" %>
           </div>
         </div>
 
         <div>
-          <%= f.submit "Let's 旅行作り!", class: "flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
+          <%= f.submit "Let's 旅行作り!", class: "w-full min-w-fit btn-primary hover:bg-blue-700 text-white font-bold btn" %>
         </div>
       <% end %>
     </div>

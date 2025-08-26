@@ -1,28 +1,45 @@
-<header class="sticky top-0 z-50 h-14 backdrop-blur bg-lime-200/90 text-gray-600">
+<header class="sticky top-0 z-50 h-14 backdrop-blur-xs bg-lime-200/90 text-gray-600">
   <div class="max-w-7xl mx-auto flex flex-wrap items-center px-4 py-2">
     <%= link_to root_path,
       class: "flex items-center gap-2 text-lime-900 font-semibold" do %>
       <%= image_tag "Furomeguri_logo.png", class: "h-10 w-auto object-contain" %>
       <span class="text-xl">ふろめぐり</span>
     <% end %>
+
     <nav class="ml-auto flex flex-wrap items-center gap-3 text-base">
+      <button class="btn btn-neutral">Neutral</button>
+      <button class="btn btn-primary">Primary</button>
+      <button class="btn btn-secondary">Secondary</button>
+      <button class="btn btn-accent">Accent</button>
+      <button class="btn btn-info">Info</button>
+      <button class="btn btn-success">Success</button>
+      <button class="btn btn-warning">Warning</button>
+      <button class="btn btn-error">Error</button>
       <% if user_signed_in? %>
-        <%= link_to "旅程作成!", new_itinerary_path, class: "inline-flex items-center bg-orange-300 px-4 py-2 rounded text-lime-900 text-sm bg-orange-400 rounded shadow" %>
-        <%= link_to '旅程一覧', itineraries_path,
-              class: "inline-flex items-center bg-orange-300 py-1 px-3 rounded text-lime-900 text-sm hover:bg-orange-400" %>
-        <%= link_to 'ログアウト', destroy_user_session_path,
-              method: :delete,
-              class: "inline-flex items-center bg-orange-300 py-1 px-3 rounded text-lime-900 text-sm hover:bg-orange-400" %>
-        <%= link_to edit_user_registration_path, class: "inline-flex items-center justify-center p-0" do %>
-          <div class="h-10 w-10 rounded-full overflow-hidden ring-1 ring-lime-900/15 hover:ring-lime-900/30 shrink-0">
-            <%= image_tag "user_profile.png",
-                  alt: "アカウント",
-                  class: "h-full w-full object-cover align-middle" %>
+        <%= link_to "旅程作成", new_itinerary_path, class: "btn btn-accent" %>
+        <div class="dropdown dropdown-end">
+          <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+            <div class="w-10 rounded-full">
+              <%= image_tag "user_profile.png",
+                alt: "アバター" %>
+            </div>
           </div>
-        <% end %>
+          <ul
+            tabindex="0"
+            class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
+            <li>
+              <%= link_to "アカウント情報編集", edit_user_registration_path, class:"justify-between" %>
+            </li>
+            <li>
+              <%= link_to '旅程一覧', itineraries_path %>
+            <li>
+              <%= link_to "ログアウト", destroy_user_session_path, method: :delete, class:"link link-error" %>
+            </li>
+          </ul>
+        </div>
       <% else %>
-        <%= link_to '新規登録', new_user_registration_path, class: "inline-flex items-center bg-orange-300 py-1 px-3 rounded text-lime-900 text-sm hover:bg-orange-400" %>
-        <%= link_to 'ログイン', user_session_path, class: "inline-flex items-center bg-orange-300 py-1 px-3 rounded text-lime-900 text-sm hover:bg-orange-400" %>
+        <%= link_to '新規登録', new_user_registration_path, class: "btn btn-accent" %>
+        <%= link_to 'ログイン', user_session_path, class: "btn btn-accent" %>
       <% end %>
     </nav>
   </div>
