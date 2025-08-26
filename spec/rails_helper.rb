@@ -40,6 +40,10 @@ RSpec.configure do |config|
     end
   end
 
+  config.before(:suite) do
+    FileUtils.rm_rf(Dir["tmp/capybara/*"])
+  end
+
   config.include Devise::Test::IntegrationHelpers, type: :request
   config.include Devise::Test::ControllerHelpers, type: :controller
   config.include Devise::Test::ControllerHelpers, type: :view
