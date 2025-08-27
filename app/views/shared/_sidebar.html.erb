@@ -1,15 +1,12 @@
-<!-- app/views/shared/_sidebar.html.erb -->
 <%= form_with url: itinerary_path(@itinerary), method: :patch, class: "h-full" do %>
   <turbo-frame id="sidebar_frame">
     <aside id="sidebar"
-          data-controller="sidebar"
           data-itinerary-id="<%= @itinerary.id %>"
           class="md:sticky md:top-14 md:h-[calc(100vh-3.5rem)]
                   md:w-full bg-white shadow-xl border-l border-gray-200
                   flex flex-col overflow-y-auto">
       <!-- タイトル & サブタイトル入力  -->
       <div class="p-4 border-b border-gray-200 space-y-2">
-        <!-- タイトル -->
         <%= text_field_tag 'itinerary[title]',
                           @itinerary.title,
                           class: 'input input-ghost font-bold font-bold text-xl' %>
@@ -20,10 +17,9 @@
                           class: 'input input-ghost input-sm text-lg' %>
       </div>
       <!-- ブロック一覧 -->
-      <div id="sidebar-items" class="flex-1 divide-y divide-gray-100">
+      <div id="sidebar-items" class="flex-1 divide-y divide-gray-100" data-controller="sortable">
         <%= render partial: 'shared/block', collection: blocks, as: :block %>
       </div>
-      <!-- フッター -->
       <div class="p-4 border-t border-gray-200">
         <%= submit_tag '旅程を保存',
                       class: 'w-full inline-flex items-center justify-center

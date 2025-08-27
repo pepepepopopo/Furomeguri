@@ -16,7 +16,7 @@ class ItinerariesController < ApplicationController
 
   def edit
     @default_locations = DefaultLocation.all
-    @blocks            = @itinerary.itinerary_blocks
+    @blocks            = @itinerary.itinerary_blocks.rank(:row_order)
   end
 
   def create
