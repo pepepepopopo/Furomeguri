@@ -5,8 +5,8 @@ export default class extends Controller {
   connect() {
     const options = {
       draggable: "turbo-frame",
-      animation: 150,
-      ghostClass: 'blue-background-class',
+      handle: ".drag-handle",
+      animation: 300,
       onEnd: this.onEnd.bind(this)
     }
 
