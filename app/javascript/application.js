@@ -7,11 +7,6 @@ document.addEventListener('click', (e) => {
   const isDropdownButton = e.target.closest('.dropdown-button');
   const isMenuItem = e.target.closest('.dropdown-menu button');
 
-  // 全てのドロップダウンメニューを一度閉じる
-  document.querySelectorAll('.dropdown-menu').forEach(menu => {
-    menu.classList.add('hidden');
-  });
-
   if (isDropdownButton) {
     const container = isDropdownButton.closest('.dropdown-container');
     const menu = container.querySelector('.dropdown-menu');
