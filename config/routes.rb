@@ -10,7 +10,12 @@ Rails.application.routes.draw do
   resources :itineraries, only: %i[index new create edit update show destroy] do
     resources :itinerary_blocks, only: %i[create update destroy]
   end
+
   get "up" => "rails/health#show", as: :rails_health_check
+
+  resources :itinerary_blocks do
+    patch "rank", on: :member
+  end
 
   # Render dynamic PWA files from app/views/pwa/*
   get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker

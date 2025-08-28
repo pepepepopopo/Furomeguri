@@ -1,6 +1,6 @@
-<turbo-frame id="block_<%= block.id || 'new' %>">
+<turbo-frame id="block_<%= block.id || 'new' %>" data-sortable-url="<%= rank_itinerary_block_path(block) %>">
   <div class="flex m-2">
-    <div class="drag-handle flex items-center justify-center w-8 cursor-grab hover:bg-base-300 border-l border-b border-t border-base-300" title="ドラッグして並び替え">
+    <div class="drag-handle flex items-center justify-center w-8 cursor-grab hover:bg-base-300 border-base-300" title="ドラッグして並び替え">
       <svg class="w-4 h-4 text-base-content/60" fill="currentColor" viewBox="0 0 24 24">
         <path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/>
       </svg>

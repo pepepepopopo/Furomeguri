@@ -1,19 +1,24 @@
 import { Controller } from "@hotwired/stimulus"
 import Sortable from "sortablejs"
+import { patch } from "@rails/request.js"
 
 export default class extends Controller {
   connect() {
     const options = {
       draggable: "turbo-frame",
       handle: ".drag-handle",
-      animation: 300,
-      onEnd: this.onEnd.bind(this)
+      onEnd: this.onEnd.bind(this),
+      ghostClass: "bg-red-300"
     }
 
-    const sortableInstance = Sortable.create(this.element, options)
+    Sortable.create(this.element, options)
   }
 
   onEnd(evt) {
     const body = { row_order_position: evt.newIndex }
+    patch(evt.item.dataset.sortableUrl, {
+      body: JSON.stringify(body),
+      responseKind: "turbo-stream",
+    })
   }
 }

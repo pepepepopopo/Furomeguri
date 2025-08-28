@@ -1,7 +1,7 @@
 class ItineraryBlocksController < ApplicationController
   before_action :authenticate_user!
   before_action :set_itinerary
-  before_action :set_block, only: %i[update destroy]
+  before_action :set_block, only: %i[update destroy, :rank]
 
   def create
     place = Place.find_or_create_by!(google_place_id: block_params[:google_place_id]) do |p|
@@ -32,6 +32,10 @@ class ItineraryBlocksController < ApplicationController
     else
       head :unprocessable_entity
     end
+  end
+
+  def rank
+    @block.update(row_order_position: params[:row_order_position])
   end
 
   # DELETE /itinerary_blocks/:id
