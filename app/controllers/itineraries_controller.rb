@@ -35,7 +35,7 @@ class ItinerariesController < ApplicationController
       ActiveRecord::Base.transaction do
         itinerary_blocks_params.each do |attrs|
           # 何も変更が無ければスキップ
-          next if attrs[:description].blank? && attrs[:starttime].blank? && attrs[:_destroy].blank?
+          next if attrs[:description].blank? && attrs[:starttime].blank? && attrs[:row_order].blank? && attrs[:_destroy].blank?
 
           if ActiveModel::Type::Boolean.new.cast(attrs[:_destroy])
             @itinerary.itinerary_blocks.find_by(id: attrs[:id])&.destroy!
@@ -54,7 +54,8 @@ class ItinerariesController < ApplicationController
             @itinerary.itinerary_blocks.create!(
               place: place,
               description: attrs[:description],
-              starttime: parse_time(attrs[:starttime])
+              starttime: parse_time(attrs[:starttime]),
+              row_order: attrs[:row_order]
             )
           end
         end
