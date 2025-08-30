@@ -6,14 +6,20 @@ export default class extends Controller {
     const options = {
       draggable: "turbo-frame",
       handle: ".drag-handle",
-      animation: 300,
+      animation: 500,
       onEnd: this.onEnd.bind(this)
     }
 
-    const sortableInstance = Sortable.create(this.element, options)
+    Sortable.create(this.element, options)
   }
 
   onEnd(evt) {
-    const body = { row_order_position: evt.newIndex }
+    const items = this.element.querySelectorAll('turbo-frame')
+    items.forEach((item, index) => {
+      const hiddenField = item.querySelector('.row-order-field')
+      if (hiddenField) {
+        hiddenField.value = index
+      }
+    })
   }
 }
