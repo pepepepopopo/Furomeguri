@@ -7,7 +7,7 @@ class ItinerariesController < ApplicationController
   end
 
   def show
-    @blocks = @itinerary.itinerary_blocks.includes(:place).order(:created_at)
+    @blocks = @itinerary.itinerary_blocks.includes(:place).rank(:row_order)
   end
 
   def new
@@ -16,7 +16,7 @@ class ItinerariesController < ApplicationController
 
   def edit
     @default_locations = DefaultLocation.all
-    @blocks            = @itinerary.itinerary_blocks.rank(:row_order)
+    @blocks = @itinerary.itinerary_blocks.includes(:place).rank(:row_order)
   end
 
   def create
@@ -35,7 +35,7 @@ class ItinerariesController < ApplicationController
       ActiveRecord::Base.transaction do
         itinerary_blocks_params.each do |attrs|
           # 何も変更が無ければスキップ
-          next if attrs[:description].blank? && attrs[:starttime].blank? && attrs[:_destroy].blank?
+          next if attrs[:description].blank? && attrs[:starttime].blank? && attrs[:row_order].blank? && attrs[:_destroy].blank?
 
           if ActiveModel::Type::Boolean.new.cast(attrs[:_destroy])
             @itinerary.itinerary_blocks.find_by(id: attrs[:id])&.destroy!
@@ -43,16 +43,19 @@ class ItinerariesController < ApplicationController
           end
 
           if attrs[:id].present?
-            @itinerary.itinerary_blocks.find(attrs[:id]).update!(
+            block = @itinerary.itinerary_blocks.find(attrs[:id])
+            block.update!(
               description: attrs[:description],
-              starttime: parse_time(attrs[:starttime])
+              starttime: parse_time(attrs[:starttime]),
+              row_order: attrs[:row_order]
             )
           else
             place = find_or_create_place(attrs)
             @itinerary.itinerary_blocks.create!(
               place: place,
               description: attrs[:description],
-              starttime: parse_time(attrs[:starttime])
+              starttime: parse_time(attrs[:starttime]),
+              row_order: attrs[:row_order]
             )
           end
         end
@@ -80,7 +83,7 @@ class ItinerariesController < ApplicationController
   def itinerary_blocks_params
     params.require(:blocks).map do |block|
       block.permit(
-        :id, :description, :starttime,
+        :id, :description, :starttime, :row_order,
         :google_place_id, :name, :lat, :lng, :place_id, :_destroy
       )
     end

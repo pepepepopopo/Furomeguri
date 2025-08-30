@@ -2,6 +2,7 @@
 import "@hotwired/turbo-rails"
 import "./controllers"
 
+
 // ドロップダウンの処理（turbo:load の外で一度だけ定義）
 document.addEventListener('click', (e) => {
   const isDropdownButton = e.target.closest('.dropdown-button');

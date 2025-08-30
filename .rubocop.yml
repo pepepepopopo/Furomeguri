@@ -98,3 +98,7 @@ Rails/FilePath:
 
 Lint/RedundantDirGlobSort:
   Enabled: false
+
+# if文の後置記法を強制しない
+Style/IfUnlessModifier:
+  Enabled: false

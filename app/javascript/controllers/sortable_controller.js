@@ -6,14 +6,9 @@ export default class extends Controller {
     const options = {
       draggable: "turbo-frame",
       handle: ".drag-handle",
-      animation: 300,
-      onEnd: this.onEnd.bind(this)
+      animation: 500,
     }
 
-    const sortableInstance = Sortable.create(this.element, options)
-  }
-
-  onEnd(evt) {
-    const body = { row_order_position: evt.newIndex }
+    Sortable.create(this.element, options)
   }
 }

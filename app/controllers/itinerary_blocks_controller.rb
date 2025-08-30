@@ -26,7 +26,8 @@ class ItineraryBlocksController < ApplicationController
   def update
     if @block.update(
       description: block_params[:description],
-      starttime: parse_time(block_params[:starttime])
+      starttime: parse_time(block_params[:starttime]),
+      row_order: block_params[:row_order]
     )
       head :ok
     else
