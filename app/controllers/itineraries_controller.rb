@@ -46,11 +46,9 @@ class ItinerariesController < ApplicationController
             block = @itinerary.itinerary_blocks.find(attrs[:id])
             block.update!(
               description: attrs[:description],
-              starttime: parse_time(attrs[:starttime])
+              starttime: parse_time(attrs[:starttime]),
+              row_order: attrs[:row_order]
             )
-            if attrs[:row_order].present?
-              block.update_attribute(:row_order_position, attrs[:row_order].to_i)
-            end
           else
             place = find_or_create_place(attrs)
             @itinerary.itinerary_blocks.create!(
