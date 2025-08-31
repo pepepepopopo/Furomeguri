@@ -1,0 +1,58 @@
+<div class="absolute top-3 left-4 right-4 mx-auto z-20 w-3/5 px-4">
+  <form id="location-search-form" class="w-full">
+    <div class="flex">
+      <select name="location" id="location" class="select">
+        <option value="" disabled selected>温泉地</option>
+        <% @default_locations.each do |default_location| %>
+          <option value="<%= default_location.name %>">
+            <%= default_location.name %>
+          </option>
+        <% end %>
+      </select>
+        <div class="tabs tabs-lift rounded-md">
+          <input type="radio" name="my_tabs_6" class="tab" checked="checked" aria-label="旅館・ホテル" />
+          <div class="tab-content bg-base-100 border-base-300 p-6">
+            <div class="flex justify-center">
+              <div class="dropdown dropdown-hover">
+                <div tabindex="0" role="button" class="btn">こだわり条件</div>
+                <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+                  <fieldset class="fieldset bg-base-100 border-base-300 rounded-box border p-1">
+                    <label class="label">
+                      <input type="checkbox" checked="checked" class="checkbox" />
+                      Remember me
+                    </label>
+                  </fieldset>
+                </ul>
+              </div>
+
+              <input type="search" name="keyword" placeholder="検索" value="<%= @keyword %>" class="input">
+              <input type="submit" value="🔎" class="btn btn-active bg-blue-700" />
+            </div>
+          </div>
+
+          <input type="radio" name="my_tabs_6" class="tab" aria-label="飲食店" />
+          <div class="tab-content bg-base-100 border-base-300 p-6">
+            <div class="flex justify-center">
+              <select name="accommodation_type" id="accommodation_type" class="select">
+                <option value="旅館・ホテル" selected>旅館・ホテル</option>
+                <option value="旅館・ホテルを含めない">旅館・ホテルを含めない</option>
+              </select>
+
+              <select name="poi_type" id="poi_type" class="select">
+                <option value="飲食・観光地" selected>飲食・観光地</option>
+                <option value="飲食・観光地を含めない" selected>飲食・観光地を含めない</option>
+              </select>
+
+              <input type="search" name="keyword" placeholder="検索" value="<%= @keyword %>" class="input">
+              <input type="submit" value="🔎" class="btn btn-active bg-blue-700" />
+            </div>
+          </div>
+
+          <input type="radio" name="my_tabs_6" class="tab" aria-label="景観地" />
+          <div class="tab-content bg-base-100 border-base-300 p-6">
+            Tab content 3
+          </div>
+        </div>
+    </div>
+  </form>
+</div>
