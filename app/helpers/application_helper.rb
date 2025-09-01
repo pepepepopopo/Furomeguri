@@ -29,4 +29,16 @@ module ApplicationHelper
       }
     }
   end
+
+  def budget_price_options
+    prices = [
+      1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000,  # 1000円間隔
+      12000, 14000, 16000, 18000, 20000,                            # 2000円間隔
+      30000, 40000, 50000, 100000
+    ]
+    {
+      min: prices,
+      max: prices
+    }
+  end
 end
