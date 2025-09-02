@@ -2,33 +2,6 @@
 import "@hotwired/turbo-rails"
 import "./controllers"
 
-
-// ドロップダウンの処理（turbo:load の外で一度だけ定義）
-document.addEventListener('click', (e) => {
-  const isDropdownButton = e.target.closest('.dropdown-button');
-  const isMenuItem = e.target.closest('.dropdown-menu button');
-
-  if (isDropdownButton) {
-    const container = isDropdownButton.closest('.dropdown-container');
-    const menu = container.querySelector('.dropdown-menu');
-    if (menu) menu.classList.toggle('hidden');
-  } else if (isMenuItem) {
-    const container = e.target.closest('.dropdown-container');
-    const button = container.querySelector('.dropdown-button');
-    const menu = container.querySelector('.dropdown-menu');
-
-    const selectedValue = e.target.textContent.trim();
-    const targetInputId = button.dataset.target;
-    const hiddenInput = document.getElementById(targetInputId);
-
-    button.textContent = selectedValue;
-    button.setAttribute('data-value', selectedValue);
-    if (hiddenInput) hiddenInput.value = selectedValue;
-
-    if (menu) menu.classList.add('hidden');
-  }
-});
-
 // Google Maps APIの読み込み完了時に呼び出されるコールバック関数
 window.initGoogleMaps = function() {
   if (document.getElementById("map")) {
