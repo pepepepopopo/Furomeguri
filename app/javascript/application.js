@@ -132,6 +132,37 @@ document.addEventListener('turbo:load', () => {
     }
   });
 });
+
+// Google Maps API検索
+const googlePlacesSearch = async (formData) => {
+  console.log('=== Google Places API検索処理開始 ===');
+  const textQueryParams = new URLSearchParams(formData).toString();
+  console.log('params:', textQueryParams);
+  try {
+    const response = await fetch(`/maps/location_search?${textQueryParams}`, {
+      method: "GET",
+      headers: { Accept: "application/json" }
+    });
+    if (!response.ok) throw new Error("通信に失敗しました");
+    const data = await response.json();
+    console.log('Google API response:', data);
+    // マーカーを作成
+    setSearchMarkers(data.places)
+  } catch (error) {
+    console.error('Google Places API検索エラー:', error);
+  }
+}
+
+// 楽天トラベルAPI検索
+const rakutenHotelSearch = async (formData) => {
+  console.log('=== 楽天トラベルAPI検索処理開始 ===');
+  console.log('form data:', formData);
+  for (let [key, value] of formData.entries()) {
+    console.log(`${key}: ${value}`);
+  }
+  // TODO: 楽天API処理を実装
+}
+
 // マーカー作成(情報ウィンドウ付き)
 async function setSearchMarkers(places) {
   if (!window.map) return;
@@ -229,33 +260,3 @@ document.addEventListener('turbo:load', () => {
   document.removeEventListener('click', clickHandler);
   document.addEventListener('click', clickHandler);
 });
-
-// Google Maps API検索
-const googlePlacesSearch = async (formData) => {
-  console.log('=== Google Places API検索処理開始 ===');
-  const textQueryParams = new URLSearchParams(formData).toString();
-  console.log('params:', textQueryParams);
-  try {
-    const response = await fetch(`/maps/location_search?${textQueryParams}`, {
-      method: "GET",
-      headers: { Accept: "application/json" }
-    });
-    if (!response.ok) throw new Error("通信に失敗しました");
-    const data = await response.json();
-    console.log('Google API response:', data);
-    // マーカーを作成
-    setSearchMarkers(data.places)
-  } catch (error) {
-    console.error('Google Places API検索エラー:', error);
-  }
-}
-
-// 楽天トラベルAPI検索
-const rakutenHotelSearch = async (formData) => {
-  console.log('=== 楽天トラベルAPI検索処理開始 ===');
-  console.log('form data:', formData);
-  for (let [key, value] of formData.entries()) {
-    console.log(`${key}: ${value}`);
-  }
-  // TODO: 楽天API処理を実装
-}
