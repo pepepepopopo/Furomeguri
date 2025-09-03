@@ -23,6 +23,7 @@ class MapsController < ApplicationController
 
   private
 
+  # google map apiでの検索
   def text_search(location, accommodation_type, poi_type, keyword)
     api_key = ENV.fetch("GOOGLE_PLACE_API_KEY", nil) # 環境変数からAPIキーを取得
     uri = URI.parse("https://places.googleapis.com/v1/places:searchText")
