@@ -81,4 +81,7 @@ class MapsController < ApplicationController
       render json: { error: @error }, status: :internal_server_error
     end
   end
+  # 楽天トラベルAPIでの検索
+  def hotel_search()
+  end
 end

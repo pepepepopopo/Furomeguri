@@ -11,50 +11,7 @@
       </select>
         <div class="tabs tabs-lift rounded-md">
           <input type="radio" name="my_tabs_6" class="tab" checked="checked" aria-label="旅館・ホテル" />
-          <div class="tab-content bg-base-100 border-base-300 p-4">
-            <div class="flex justify-center gap-1">
-              <div class="dropdown">
-                <div tabindex="0" role="button" class="btn btn-success whitespace-nowrap">こだわり条件</div>
-                <div tabindex="0" class="dropdown-content bg-base-100 rounded-box z-1 p-4 shadow-sm w-72 sm:w-80 md:w-130">
-                  <div class="grid grid-cols-3 gap-2 mb-3">
-                    <input class="btn" type="checkbox" name="frameworks" aria-label="源泉かけ流し"/>
-                    <input class="btn" type="checkbox" name="frameworks" aria-label="大浴場"/>
-                    <input class="btn" type="checkbox" name="frameworks" aria-label="サウナ"/>
-                    <input class="btn" type="checkbox" name="frameworks" aria-label="露天風呂"/>
-                    <input class="btn" type="checkbox" name="frameworks" aria-label="海が見える"/>
-                    <input class="btn" type="checkbox" name="frameworks" aria-label="貸し切り風呂"/>
-                    <input class="btn" type="checkbox" name="frameworks" aria-label="客室露天風呂"/>
-                  </div>
-                  <input class="btn btn-error w-full" type="reset" value="リセット"/>
-                </div>
-              </div>
-              <div class="dropdown">
-                <div tabindex="0" role="button" class="btn btn-success whitespace-nowrap" id="budget-button">予算</div>
-                <div tabindex="0" class="dropdown-content bg-base-100 rounded-box z-1 p-4 shadow-sm w-72 sm:w-80 md:w-72">
-                  <div class="flex items-center gap-2">
-                    <select name="min_price" id="min_price" class="select w-auto">
-                      <option disabled selected>最低料金</option>
-                      <option value="">下限なし</option>
-                      <% budget_price_options[:min].each do |price| %>
-                        <option value="<%= price %>"><%= number_with_delimiter(price) %>円</option>
-                      <% end %>
-                    </select>
-                    <span>～</span>
-                    <select name="max_price" id="max_price" class="select w-auto">
-                      <option disabled selected>最高料金</option>
-                      <option value="">上限なし</option>
-                      <% budget_price_options[:max].each do |price| %>
-                        <option value="<%= price %>"><%= number_with_delimiter(price) %>円</option>
-                      <% end %>
-                    </select>
-                  </div>
-                  <input class="btn btn-error w-full mt-3" type="reset" value="リセット"/>
-                </div>
-              </div>
-              <input type="search" name="keyword" placeholder="検索" value="<%= @keyword %>" class="input">
-              <input type="submit" value="🔎" class="btn btn-active bg-blue-700" />
-            </div>
-          </div>
+            <%= render 'shared/search_bar/hotel_search' %>
 
           <input type="radio" name="my_tabs_6" class="tab" aria-label="飲食店" />
           <div class="tab-content bg-base-100 border-base-300 p-6">
