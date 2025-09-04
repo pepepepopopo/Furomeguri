@@ -3,7 +3,7 @@ services:
     name: furomeguri-web
     env: ruby
     region: singapore
-    buildCommand: "./render-build.sh"
+    buildCommand: "./bin/render-build.sh"
     startCommand: "bundle exec puma -C config/puma.rb"
     envVars:
       - key: DATABASE_URL
