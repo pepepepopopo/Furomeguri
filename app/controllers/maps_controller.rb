@@ -81,14 +81,15 @@ class MapsController < ApplicationController
       render json: { error: @error }, status: :internal_server_error
     end
   end
+
   # 楽天トラベルAPIでの検索
   def hotel_search(location)
     # 緯度
-    location_latitude = DefaultLocation.find_by(name: location).lat
+    DefaultLocation.find_by(name: location).lat
     # 経度
-    location_longitude = DefaultLocation.find_by(name: location).lng
+    DefaultLocation.find_by(name: location).lng
 
-    applicationId = ENV.fetch("RAKUTEN_APPLICATION_ID", nil)
-    uri = URI.parse("https://app.rakuten.co.jp/services/api/Travel/SimpleHotelSearch/20170426?")
+    ENV.fetch("RAKUTEN_APPLICATION_ID", nil)
+    URI.parse("https://app.rakuten.co.jp/services/api/Travel/SimpleHotelSearch/20170426?")
   end
 end
