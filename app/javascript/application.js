@@ -2,6 +2,8 @@
 import "@hotwired/turbo-rails"
 import "./controllers"
 
+console.log('=== application.js 読み込み完了 ===');
+
 // Google Maps APIの読み込み完了時に呼び出されるコールバック関数
 window.initGoogleMaps = function() {
   if (document.getElementById("map")) {
@@ -84,11 +86,18 @@ async function setMapCenterToSelectedLocation(selectedLocationName) {
 
 let searchMarkers = [];
 
-// テキスト検索
+// 検索フォーム共通処理
 document.addEventListener('turbo:load', () => {
+  console.log('=== turbo:load イベント発火 ===');
   const form = document.getElementById('location-search-form');
-  if(!form) return;
+  console.log('form element:', form);
+  if(!form) {
+    console.log('フォームが見つかりません');
+    return;
+  }
+  console.log('フォームのイベントリスナー設定開始');
   form.addEventListener('submit', async (e) => {
+    console.log('=== フォーム送信イベント発火 ===');
     e.preventDefault();
 
     // 必須チェック
@@ -98,26 +107,62 @@ document.addEventListener('turbo:load', () => {
       return;
     }
 
-    // FormData→URLパラメータ化
+    // クリックされたsubmitボタンを取得
+    const submitter = e.submitter;
+    const apiType = submitter?.dataset?.apiType;
+    
+    console.log('=== 検索処理開始 ===');
+    console.log('submitter:', submitter);
+    console.log('apiType:', apiType);
+    console.log('submitter.dataset:', submitter?.dataset);
+
+    // FormData作成
     const formData = new FormData(form);
-    const textQueryParams = new URLSearchParams(formData).toString();
     const selectedLocation = formData.get("location");
     await setMapCenterToSelectedLocation(selectedLocation);
     clearMarkers();
 
-    try {
-      const response = await fetch(`/maps/location_search?${textQueryParams}`, {
-        method: "GET",
-        headers: { Accept: "application/json" }
-      });
-      if (!response.ok) throw new Error("通信に失敗しました");
-      const data = await response.json();
-      // マーカーを作成
-      setSearchMarkers(data.places)
-    } catch (error) {
+    // API種別に応じて処理を分岐
+    if (apiType === 'rakuten') {
+      console.log('楽天API検索を実行');
+      await rakutenHotelSearch(formData);
+    } else {
+      console.log('Google Places API検索を実行');
+      await googlePlacesSearch(formData);
     }
   });
 });
+
+// Google Maps API検索
+const googlePlacesSearch = async (formData) => {
+  console.log('=== Google Places API検索処理開始 ===');
+  const textQueryParams = new URLSearchParams(formData).toString();
+  console.log('params:', textQueryParams);
+  try {
+    const response = await fetch(`/maps/location_search?${textQueryParams}`, {
+      method: "GET",
+      headers: { Accept: "application/json" }
+    });
+    if (!response.ok) throw new Error("通信に失敗しました");
+    const data = await response.json();
+    console.log('Google API response:', data);
+    // マーカーを作成
+    setSearchMarkers(data.places)
+  } catch (error) {
+    console.error('Google Places API検索エラー:', error);
+  }
+}
+
+// 楽天トラベルAPI検索
+const rakutenHotelSearch = async (formData) => {
+  console.log('=== 楽天トラベルAPI検索処理開始 ===');
+  console.log('form data:', formData);
+  for (let [key, value] of formData.entries()) {
+    console.log(`${key}: ${value}`);
+  }
+  // TODO: 楽天API処理を実装
+}
+
 // マーカー作成(情報ウィンドウ付き)
 async function setSearchMarkers(places) {
   if (!window.map) return;

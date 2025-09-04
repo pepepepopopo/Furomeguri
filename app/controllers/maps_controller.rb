@@ -25,7 +25,7 @@ class MapsController < ApplicationController
 
   # google map apiでの検索
   def text_search(location, accommodation_type, poi_type, keyword)
-    api_key = ENV.fetch("GOOGLE_PLACE_API_KEY", nil) # 環境変数からAPIキーを取得
+    api_key = ENV.fetch("GOOGLE_PLACE_API_KEY", nil)
     uri = URI.parse("https://places.googleapis.com/v1/places:searchText")
 
     # 引数をリクエストボディ用に加工
@@ -80,5 +80,16 @@ class MapsController < ApplicationController
       @error = "API request failed with status code: #{response.code}"
       render json: { error: @error }, status: :internal_server_error
     end
+  end
+
+  # 楽天トラベルAPIでの検索
+  def hotel_search(location)
+    # 緯度
+    DefaultLocation.find_by(name: location).lat
+    # 経度
+    DefaultLocation.find_by(name: location).lng
+
+    ENV.fetch("RAKUTEN_APPLICATION_ID", nil)
+    URI.parse("https://app.rakuten.co.jp/services/api/Travel/SimpleHotelSearch/20170426?")
   end
 end
