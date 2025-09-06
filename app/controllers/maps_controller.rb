@@ -21,13 +21,11 @@ class MapsController < ApplicationController
     end
 
     places = case @api_type
-              when 'google'
-                text_search(@location, @accommodation_type, @poi_type, @keyword)
-              when 'rakuten'
-                hotel_search(@location)
-              else
-                text_search(@location, @accommodation_type, @poi_type, @keyword)
-              end
+             when 'google'
+               text_search(@location, @accommodation_type, @poi_type, @keyword)
+             when 'rakuten'
+               hotel_search(@location)
+             end
     render json: places
   end
 
@@ -41,7 +39,7 @@ class MapsController < ApplicationController
     # 引数をリクエストボディ用に加工
     location_data = DefaultLocation.find_by(name: location)
     return { error: "Location not found" } unless location_data
-    
+
     # 緯度・経度
     location_latitude = location_data.lat
     location_longitude = location_data.lng
@@ -126,7 +124,7 @@ class MapsController < ApplicationController
       data = JSON.parse(response.body)
       # Google Places APIと同様の形式に変換
       {
-        hotels: data.dig("hotels") || [],
+        hotels: data("hotels") || [],
         total_count: data.dig("pagingInfo", "recordCount") || 0
       }
     else
