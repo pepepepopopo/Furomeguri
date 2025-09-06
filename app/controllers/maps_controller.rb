@@ -9,16 +9,26 @@ class MapsController < ApplicationController
 
   def location_search
     @location = params[:location]
+    @api_type = params[:api_type]
     @accommodation_type = params[:accommodation_type]
     @poi_type = params[:poi_type]
     @keyword = params[:keyword]
 
-    if @location.present?
-      places = text_search(@location, @accommodation_type, @poi_type, @keyword)
-      render json: places
-    else
-      Rails.logger.warn
+    # locationパラメータの検証
+    if @location.blank?
+      render json: { error: "Location parameter is required" }, status: :bad_request
+      return
     end
+
+    places = case @api_type
+              when 'google'
+                text_search(@location, @accommodation_type, @poi_type, @keyword)
+              when 'rakuten'
+                hotel_search(@location)
+              else
+                text_search(@location, @accommodation_type, @poi_type, @keyword)
+              end
+    render json: places
   end
 
   private
@@ -29,10 +39,12 @@ class MapsController < ApplicationController
     uri = URI.parse("https://places.googleapis.com/v1/places:searchText")
 
     # 引数をリクエストボディ用に加工
-    # 緯度
-    location_latitude = DefaultLocation.find_by(name: location).lat
-    # 経度
-    location_longitude = DefaultLocation.find_by(name: location).lng
+    location_data = DefaultLocation.find_by(name: location)
+    return { error: "Location not found" } unless location_data
+    
+    # 緯度・経度
+    location_latitude = location_data.lat
+    location_longitude = location_data.lng
     # 宿泊施設タイプをtextQueryに設定
     textquery_accommodation = "ホテル,旅館" if accommodation_type == "旅館・ホテル"
     # 周辺施設タイプをtextQueryに設定
@@ -84,12 +96,43 @@ class MapsController < ApplicationController
 
   # 楽天トラベルAPIでの検索
   def hotel_search(location)
-    # 緯度
-    DefaultLocation.find_by(name: location).lat
-    # 経度
-    DefaultLocation.find_by(name: location).lng
+    app_id = ENV.fetch("RAKUTEN_APPLICATION_ID")
+    location_data = DefaultLocation.find_by(name: location)
 
-    ENV.fetch("RAKUTEN_APPLICATION_ID", nil)
-    URI.parse("https://app.rakuten.co.jp/services/api/Travel/SimpleHotelSearch/20170426?")
+    return { error: "Location not found" } unless location_data
+
+    # APIパラメータ
+    params = {
+      applicationId: app_id,
+      format: "json",
+      latitude: location_data.lat,
+      longitude: location_data.lng,
+      searchRadius: 3,
+      datumType: 1,
+      allReturnFlag: 1
+    }
+
+    uri = URI.parse("https://app.rakuten.co.jp/services/api/Travel/SimpleHotelSearch/20170426")
+    uri.query = URI.encode_www_form(params)
+
+    # HTTPリクエスト実行
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.use_ssl = true
+
+    request = Net::HTTP::Get.new(uri)
+    response = http.request(request)
+
+    if response.code == "200"
+      data = JSON.parse(response.body)
+      # Google Places APIと同様の形式に変換
+      {
+        hotels: data.dig("hotels") || [],
+        total_count: data.dig("pagingInfo", "recordCount") || 0
+      }
+    else
+      { error: "Rakuten API request failed with status code: #{response.code}" }
+    end
+  rescue StandardError => e
+    { error: "Rakuten API error: #{e.message}" }
   end
 end

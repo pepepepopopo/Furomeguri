@@ -2,10 +2,10 @@
 import "@hotwired/turbo-rails"
 import "./controllers"
 
-console.log('=== application.js 読み込み完了 ===');
-
 // Google Maps APIの読み込み完了時に呼び出されるコールバック関数
+// グローバルスコープに即座に定義
 window.initGoogleMaps = function() {
+  console.log('initGoogleMaps called');
   if (document.getElementById("map")) {
     initMap();
   }
@@ -31,11 +31,11 @@ if (!window.fetchDefaultLocations) {
   };
 }
 
-// Google Maps 初期化
-if (!window.initMap) {
-  window.initMap = async function () {
-    const mapDev = document.getElementById("map");
-    if(!mapDev) return;
+// Google Maps 初期化 - グローバルスコープで定義
+window.initMap = async function () {
+  if(!mapDev) return;
+
+  try {
     const { Map } = await google.maps.importLibrary("maps");
 
     // デフォルトの中心位置(東京駅)
@@ -47,8 +47,10 @@ if (!window.initMap) {
     })
 
     await setDefaultMarker();
-  };
-}
+  } catch (error) {
+    console.error('Error initializing map:', error);
+  }
+};
 
 let defaultMarkers = [];
 // seed値の場所にピンを打つ
@@ -90,12 +92,10 @@ let searchMarkers = [];
 document.addEventListener('turbo:load', () => {
   console.log('=== turbo:load イベント発火 ===');
   const form = document.getElementById('location-search-form');
-  console.log('form element:', form);
   if(!form) {
     console.log('フォームが見つかりません');
     return;
   }
-  console.log('フォームのイベントリスナー設定開始');
   form.addEventListener('submit', async (e) => {
     console.log('=== フォーム送信イベント発火 ===');
     e.preventDefault();
@@ -110,7 +110,6 @@ document.addEventListener('turbo:load', () => {
     // クリックされたsubmitボタンを取得
     const submitter = e.submitter;
     const apiType = submitter?.dataset?.apiType;
-    
     console.log('=== 検索処理開始 ===');
     console.log('submitter:', submitter);
     console.log('apiType:', apiType);
@@ -119,6 +118,10 @@ document.addEventListener('turbo:load', () => {
     // FormData作成
     const formData = new FormData(form);
     const selectedLocation = formData.get("location");
+    console.log('FormData contents:');
+    for (let [key, value] of formData.entries()) {
+      console.log(`${key}: ${value}`);
+    }
     await setMapCenterToSelectedLocation(selectedLocation);
     clearMarkers();
 
@@ -156,14 +159,65 @@ const googlePlacesSearch = async (formData) => {
 // 楽天トラベルAPI検索
 const rakutenHotelSearch = async (formData) => {
   console.log('=== 楽天トラベルAPI検索処理開始 ===');
-  console.log('form data:', formData);
+  // FormDataをコピーしてapi_typeを追加
+  const searchParams = new URLSearchParams();
   for (let [key, value] of formData.entries()) {
-    console.log(`${key}: ${value}`);
+    console.log(`Adding to searchParams: ${key} = ${value}`);
+    searchParams.append(key, value);
   }
-  // TODO: 楽天API処理を実装
+  searchParams.append('api_type', 'rakuten');
+  console.log('Final params string:', searchParams.toString());
+  console.log('URL will be:', `/maps/location_search?${searchParams.toString()}`);
+
+  try {
+    const response = await fetch(`/maps/location_search?${searchParams.toString()}`, {
+      method: "GET",
+      headers: { Accept: "application/json" }
+    });
+    if (!response.ok) throw new Error("通信に失敗しました");
+    const data = await response.json();
+    console.log('Rakuten API response:', data);
+    // 楽天API用のマーカー処理
+    setRakutenMarkers(data.hotels || []);
+  } catch (error) {
+    console.error('楽天トラベルAPI検索エラー:', error);
+  }
 }
 
-// マーカー作成(情報ウィンドウ付き)
+// 楽天API用マーカー作成
+async function setRakutenMarkers(hotels) {
+  if (!window.map) return;
+
+  const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary('marker');
+  const infoWindow = new google.maps.InfoWindow();
+
+  hotels.forEach(hotel => {
+    const { latitude: lat, longitude: lng } = hotel.hotel?.[0]?.hotelBasicInfo || {};
+    const name = hotel.hotel?.[0]?.hotelBasicInfo?.hotelName || '名称未設定';
+    
+    if (lat && lng) {
+      const rakutenMarker = new AdvancedMarkerElement({
+        map: window.map,
+        position: { lat: parseFloat(lat), lng: parseFloat(lng) },
+        title: name,
+        content: new PinElement({ background: '#FF6B6B' }).element // 楽天用の色
+      });
+
+      // クリックされたときの情報ウィンドウ
+      rakutenMarker.addListener('gmp-click', () => {
+        infoWindow.setContent(`
+          <strong>${name}</strong><br>
+          <small>楽天トラベル</small>
+        `);
+        infoWindow.open(window.map, rakutenMarker);
+      });
+
+      searchMarkers.push(rakutenMarker);
+    }
+  });
+}
+
+// Google Places API用マーカー作成(情報ウィンドウ付き)
 async function setSearchMarkers(places) {
   if (!window.map) return;
 
