@@ -15,10 +15,10 @@ services:
       timeout: 5s
       retries: 5
   selenium_chrome:
-    image: selenium/standalone-chrome
+    image: seleniarm/standalone-chromium:latest
     ports:
       - "4444:4444"
-    shm_size: '5gb'
+    shm_size: '2gb'
 
   web:
     build:
