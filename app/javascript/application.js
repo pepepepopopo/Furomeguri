@@ -33,13 +33,13 @@ if (!window.fetchDefaultLocations) {
 
 // Google Maps 初期化 - グローバルスコープで定義
 window.initMap = async function () {
-  if(!mapDev) return;
+  const mapElement = document.getElementById("map");
+  if(!mapElement) return;
 
   try {
     const { Map } = await google.maps.importLibrary("maps");
 
     // デフォルトの中心位置(東京駅)
-    const mapElement = document.getElementById("map");
     window.map = new Map(mapElement, {
       center: { lat: 35.68125718370711, lng: 139.7665076889907 },
       zoom: 6,
