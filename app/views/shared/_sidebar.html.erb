@@ -17,7 +17,7 @@
                           class: 'input input-ghost input-sm text-lg' %>
       </div>
       <!-- ブロック一覧 -->
-      <div id="sidebar-items" class="flex-1 divide-y divide-gray-100" data-controller="sortable">
+      <div id="sidebar-items" class="flex-1" data-controller="sortable">
         <%= render partial: 'shared/block', collection: blocks, as: :block %>
       </div>
       <div class="p-4 border-t border-gray-200">

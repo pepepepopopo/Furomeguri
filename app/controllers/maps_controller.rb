@@ -14,6 +14,11 @@ class MapsController < ApplicationController
     @poi_type = params[:poi_type]
     @keyword = params[:keyword]
 
+    # 絞り込み条件パラメータ
+    @min_price = params[:min_price]
+    @max_price = params[:max_price]
+    @amenities = extract_amenities(params)
+
     # locationパラメータの検証
     if @location.blank?
       render json: { error: "Location parameter is required" }, status: :bad_request
@@ -24,7 +29,8 @@ class MapsController < ApplicationController
              when 'google'
                text_search(@location, @accommodation_type, @poi_type, @keyword)
              when 'rakuten'
-               hotel_search(@location)
+               raw_results = hotel_search(@location)
+               filter_rakuten_results(raw_results)
              end
     render json: places
   end
@@ -43,12 +49,27 @@ class MapsController < ApplicationController
     # 緯度・経度
     location_latitude = location_data.lat
     location_longitude = location_data.lng
-    # 宿泊施設タイプをtextQueryに設定
-    textquery_accommodation = "ホテル,旅館" if accommodation_type == "旅館・ホテル"
-    # 周辺施設タイプをtextQueryに設定
-    textquery_poi_type = "飲食,観光地" if poi_type == "飲食・観光地"
-    # textQueryの作成
-    textquery_keyword = "#{textquery_accommodation},#{textquery_poi_type},#{keyword}"
+    # textQueryの構築
+    query_parts = []
+    
+    # 宿泊施設タイプを追加
+    if accommodation_type == "旅館・ホテル"
+      query_parts << "ホテル OR 旅館"
+    end
+    
+    # 周辺施設タイプを追加
+    if poi_type == "飲食・観光地"
+      query_parts << "レストラン OR 観光地"
+    end
+    
+    # キーワードを追加
+    query_parts << keyword unless keyword.blank?
+    
+    # 温泉地名を常に含める
+    query_parts << location
+    
+    textquery_keyword = query_parts.compact.join(" ")
+    textquery_keyword = location if textquery_keyword.blank?
     # リクエストボディの構築
     request_body = {
       textQuery: textquery_keyword,
@@ -124,7 +145,7 @@ class MapsController < ApplicationController
       data = JSON.parse(response.body)
       # Google Places APIと同様の形式に変換
       {
-        hotels: data("hotels") || [],
+        hotels: data["hotels"] || [],
         total_count: data.dig("pagingInfo", "recordCount") || 0
       }
     else
@@ -132,5 +153,65 @@ class MapsController < ApplicationController
     end
   rescue StandardError => e
     { error: "Rakuten API error: #{e.message}" }
+  end
+
+  def sort_hotel_response(data); end
+
+  # こだわり条件パラメータの抽出
+  def extract_amenities(params)
+    amenity_keys = ['源泉かけ流し', '大浴場', 'サウナ', '露天風呂', '海が見える', '貸し切り風呂', '客室露天風呂']
+    amenity_keys.select { |key| params[key].present? }
+  end
+
+  # 楽天トラベルAPI結果の絞り込み
+  def filter_rakuten_results(results)
+    return results if results.is_a?(Hash) && results[:error]
+
+    hotels = results[:hotels] || []
+
+    filtered_hotels = hotels.select do |hotel|
+      hotel_info = hotel.dig('hotel', 0, 'hotelBasicInfo')
+      next false unless hotel_info
+
+      # 価格絞り込み
+      next false unless price_in_range?(hotel_info)
+
+      # こだわり条件絞り込み
+      next false unless amenities_match?(hotel_info)
+
+      true
+    end
+
+    { hotels: filtered_hotels, total_count: filtered_hotels.size }
+  end
+
+  # 価格範囲チェック
+  def price_in_range?(hotel_info)
+    return true if @min_price.blank? && @max_price.blank?
+
+    price = hotel_info['hotelMinCharge']&.to_i
+    return true if price.nil?
+
+    min_ok = @min_price.blank? || price >= @min_price.to_i
+    max_ok = @max_price.blank? || price <= @max_price.to_i
+
+    min_ok && max_ok
+  end
+
+  # こだわり条件マッチング
+  def amenities_match?(hotel_info)
+    return true if @amenities.empty?
+
+    # ホテル名、説明、設備情報を結合して検索対象とする
+    searchable_text = [
+      hotel_info['hotelName'],
+      hotel_info['hotelSpecial'],
+      hotel_info['hotelComment']
+    ].compact.join(' ')
+
+    # 全てのこだわり条件が含まれているかチェック
+    @amenities.all? do |amenity|
+      searchable_text.include?(amenity)
+    end
   end
 end

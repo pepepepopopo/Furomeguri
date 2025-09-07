@@ -110,3 +110,13 @@ This command:
 - Ensures the user doesn't need `sudo` for subsequent operations
 
 **Must be executed after every file change to prevent permission issues.**
+
+## Claude Code Communication Settings
+
+**IMPORTANT**: Claude Code must ALWAYS respond in Japanese (日本語) for all communications with the user. This includes:
+- All explanations and responses
+- Error messages and debugging information  
+- Code comments and documentation
+- Progress updates and status messages
+
+This is a Japanese hot spring tourism application (風呂巡り), and Japanese communication is essential for proper user interaction.
