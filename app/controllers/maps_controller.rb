@@ -51,23 +51,23 @@ class MapsController < ApplicationController
     location_longitude = location_data.lng
     # textQueryの構築
     query_parts = []
-    
+
     # 宿泊施設タイプを追加
     if accommodation_type == "旅館・ホテル"
       query_parts << "ホテル OR 旅館"
     end
-    
+
     # 周辺施設タイプを追加
     if poi_type == "飲食・観光地"
       query_parts << "レストラン OR 観光地"
     end
-    
+
     # キーワードを追加
-    query_parts << keyword unless keyword.blank?
-    
+    query_parts << keyword if keyword.present?
+
     # 温泉地名を常に含める
     query_parts << location
-    
+
     textquery_keyword = query_parts.compact.join(" ")
     textquery_keyword = location if textquery_keyword.blank?
     # リクエストボディの構築
