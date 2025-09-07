@@ -5,7 +5,6 @@ import "./controllers"
 // Google Maps APIの読み込み完了時に呼び出されるコールバック関数
 // グローバルスコープに即座に定義
 window.initGoogleMaps = function() {
-  console.log('initGoogleMaps called');
   if (document.getElementById("map")) {
     initMap();
   }
@@ -69,11 +68,19 @@ async function setDefaultMarker () {
 }
 
 // Seedマーカーをクリア
-const clearMarkers = () => {
+const clearSeedMarkers = () => {
   defaultMarkers.forEach(defaultMarker => {
     defaultMarker.map = null;
   })
   defaultMarkers = [];
+}
+
+// 検索結果マーカーをクリア
+const clearSearchedMarkers = () => {
+  searchMarkers.forEach(searchMarker => {
+    searchMarker.map = null;
+  })
+  searchMarkers = [];
 }
 
 // 選択されたlocationを中心にマップを調整
@@ -90,14 +97,9 @@ let searchMarkers = [];
 
 // 検索フォーム共通処理
 document.addEventListener('turbo:load', () => {
-  console.log('=== turbo:load イベント発火 ===');
   const form = document.getElementById('location-search-form');
-  if(!form) {
-    console.log('フォームが見つかりません');
-    return;
-  }
+  if(!form) return;
   form.addEventListener('submit', async (e) => {
-    console.log('=== フォーム送信イベント発火 ===');
     e.preventDefault();
 
     // 必須チェック
@@ -123,13 +125,14 @@ document.addEventListener('turbo:load', () => {
       console.log(`${key}: ${value}`);
     }
     await setMapCenterToSelectedLocation(selectedLocation);
-    clearMarkers();
+    clearSeedMarkers();
+    clearSearchedMarkers();
 
     // API種別に応じて処理を分岐
-    if (apiType === 'rakuten') {
+    if (apiType == 'rakuten') {
       console.log('楽天API検索を実行');
       await rakutenHotelSearch(formData);
-    } else {
+    } else if (apiType == "google") {
       console.log('Google Places API検索を実行');
       await googlePlacesSearch(formData);
     }
@@ -139,18 +142,31 @@ document.addEventListener('turbo:load', () => {
 // Google Maps API検索
 const googlePlacesSearch = async (formData) => {
   console.log('=== Google Places API検索処理開始 ===');
+  // api_typeパラメータを追加
+  formData.append('api_type', 'google');
   const textQueryParams = new URLSearchParams(formData).toString();
   console.log('params:', textQueryParams);
   try {
+    console.log('リクエストURL:', `/maps/location_search?${textQueryParams}`);
     const response = await fetch(`/maps/location_search?${textQueryParams}`, {
       method: "GET",
       headers: { Accept: "application/json" }
     });
+    console.log('Response status:', response.status);
+    console.log('Response ok:', response.ok);
     if (!response.ok) throw new Error("通信に失敗しました");
     const data = await response.json();
     console.log('Google API response:', data);
-    // マーカーを作成
-    setSearchMarkers(data.places)
+    console.log('Response type:', typeof data);
+    console.log('Has places:', !!data?.places);
+    console.log('Places length:', data?.places?.length);
+    
+    if (data && data.places && data.places.length > 0) {
+      console.log('マーカーを設定します');
+      setSearchMarkers(data.places);
+    } else {
+      console.log('検索結果が見つかりませんでした');
+    }
   } catch (error) {
     console.error('Google Places API検索エラー:', error);
   }
@@ -194,7 +210,7 @@ async function setRakutenMarkers(hotels) {
   hotels.forEach(hotel => {
     const { latitude: lat, longitude: lng } = hotel.hotel?.[0]?.hotelBasicInfo || {};
     const name = hotel.hotel?.[0]?.hotelBasicInfo?.hotelName || '名称未設定';
-    
+
     if (lat && lng) {
       const rakutenMarker = new AdvancedMarkerElement({
         map: window.map,
@@ -208,8 +224,29 @@ async function setRakutenMarkers(hotels) {
         infoWindow.setContent(`
           <strong>${name}</strong><br>
           <small>楽天トラベル</small>
+          ${window.currentUserLoggedIn
+            ? `<button id="add_itinerary_button"
+                        data-place-id="${hotel.hotel?.[0]?.hotelBasicInfo?.hotelNo || ''}"
+                        data-name="${name}"
+                        data-lat="${lat}"
+                        data-lng="${lng}"
+                        class="mt-2 px-3 py-1 bg-red-400 text-white rounded-xs hover:bg-red-500">
+              +旅程追加!
+            </button>`
+            : ''
+          }
         `);
         infoWindow.open(window.map, rakutenMarker);
+        
+        // 情報ウィンドウが開かれた後にボタンのイベントリスナーを追加
+        if (window.currentUserLoggedIn) {
+          setTimeout(() => {
+            const button = document.getElementById('add_itinerary_button');
+            if (button) {
+              button.addEventListener('click', handleAddItineraryClick);
+            }
+          }, 100);
+        }
       });
 
       searchMarkers.push(rakutenMarker);
@@ -252,62 +289,80 @@ async function setSearchMarkers(places) {
         }
       `);
       infoWindow.open(window.map, searchMarker);
+      
+      // 情報ウィンドウが開かれた後にボタンのイベントリスナーを追加
+      if (window.currentUserLoggedIn) {
+        setTimeout(() => {
+          const button = document.getElementById('add_itinerary_button');
+          if (button) {
+            button.addEventListener('click', handleAddItineraryClick);
+          }
+        }, 100);
+      }
     });
 
     searchMarkers.push(searchMarker);
   });
 }
 
-// 旅程追加ボタンを押したときの処理
+// 旅程追加ボタンクリック処理関数
+const handleAddItineraryClick = async (e) => {
+  const addItineraryButton = e.target.closest('#add_itinerary_button');
+  if (!addItineraryButton) return;
+
+  e.preventDefault();
+  if (addItineraryButton.disabled) return;
+
+  const sidebar = document.getElementById('sidebar');
+  if (!sidebar) return;
+
+  const {
+    placeId,
+    name,
+    lat: latStr,
+    lng: lngStr,
+  } = addItineraryButton.dataset;
+
+  const lat = parseFloat(latStr);
+  const lng = parseFloat(lngStr);
+  const itineraryId = sidebar.dataset.itineraryId;
+
+  try {
+    addItineraryButton.disabled = true;
+
+    const response = await fetch(`/itineraries/${itineraryId}/itinerary_blocks`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'text/vnd.turbo-stream.html',
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content,
+      },
+      body: JSON.stringify({
+        itinerary_block: {
+          google_place_id: placeId,
+          name,
+          lat,
+          lng,
+        },
+      }),
+    });
+    if (response.ok) {
+      const streamHtml = await response.text();
+      Turbo.renderStreamMessage(streamHtml);
+    } else {
+    }
+  } catch (error) {
+    addItineraryButton.disabled = false;
+  }
+};
+
+// 旅程追加ボタンを押したときの処理（既存のイベントデリゲーション保持）
 document.addEventListener('turbo:load', () => {
   const sidebar = document.getElementById('sidebar');
   if (!sidebar) return;
 
   const clickHandler = async (e) => {
-    const addItineraryButton = e.target.closest('#add_itinerary_button');
-    if (!addItineraryButton) return;
-
-    e.preventDefault();
-    if (addItineraryButton.disabled) return;
-
-    const {
-      placeId,
-      name,
-      lat: latStr,
-      lng: lngStr,
-    } = addItineraryButton.dataset;
-
-    const lat = parseFloat(latStr);
-    const lng = parseFloat(lngStr);
-    const itineraryId = sidebar.dataset.itineraryId;
-
-    try {
-      addItineraryButton.disabled = true;
-
-      const response = await fetch(`/itineraries/${itineraryId}/itinerary_blocks`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'text/vnd.turbo-stream.html',
-          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content,
-        },
-        body: JSON.stringify({
-          itinerary_block: {
-            google_place_id: placeId,
-            name,
-            lat,
-            lng,
-          },
-        }),
-      });
-      if (response.ok) {
-        const streamHtml = await response.text();
-        Turbo.renderStreamMessage(streamHtml);
-      } else {
-      }
-    } catch (error) {
-      addItineraryButton.disabled = false;
-    }
+    await handleAddItineraryClick(e);
   };
 
   // 多重登録を防ぐため、一度外してから付け直す

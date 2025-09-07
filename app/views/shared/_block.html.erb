@@ -1,5 +1,5 @@
-<turbo-frame id="block_<%= block.id || 'new' %>">
-  <div class="flex m-2">
+<turbo-frame id="block_<%= block.id || 'new' %>" class="block">
+  <div class="flex mx-1 py-1">
     <div class="drag-handle flex items-center justify-center w-8 cursor-grab hover:bg-base-300 border-l border-b border-t border-base-300" title="ドラッグして並び替え">
       <svg class="w-4 h-4 text-base-content/60" fill="currentColor" viewBox="0 0 24 24">
         <path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/>
@@ -10,13 +10,13 @@
         <h2 class="card-title"><%= block.place.name %></h2>
         <%= text_area_tag 'blocks[][description]',
                           block.description,
-                          class: 'textarea',
+                          class: 'textarea-sm',
                           placeholder: '持ち物 etc..' %>
         <p class="mt-2 text-gray-700">到着時間</p>
         <%= tag.input type: 'datetime-local',
                       name: 'blocks[][starttime]',
                       value: (block.starttime&.strftime('%Y-%m-%dT%H:%M')),
-                      class: 'input' %>
+                      class: 'input-sm' %>
         <%= hidden_field_tag 'blocks[][row_order]',
                               block.row_order,
                               class: 'row-order-field' %>
@@ -27,7 +27,7 @@
                       data: { turbo_method: :delete,
                               turbo_stream: true,
                               turbo_confirm: '削除しますか？' },
-                      class: 'btn btn-error' %>
+                      class: 'btn btn-error text-xs px-2 py-1 min-h-0 h-6' %>
         </div>
       </div>
     </div>
