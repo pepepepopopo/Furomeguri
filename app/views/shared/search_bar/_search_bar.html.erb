@@ -19,22 +19,7 @@
           </div>
 
           <input type="radio" name="my_tabs_6" class="tab" aria-label="景観地" />
-          <div class="tab-content bg-base-100 border-base-300 p-6">
-            <div class="flex justify-center">
-              <select name="accommodation_type" id="accommodation_type" class="select">
-                <option value="旅館・ホテル" selected>旅館・ホテル</option>
-                <option value="旅館・ホテルを含めない">旅館・ホテルを含めない</option>
-              </select>
-
-              <select name="poi_type" id="poi_type" class="select">
-                <option value="飲食・観光地" selected>飲食・観光地</option>
-                <option value="飲食・観光地を含めない" selected>飲食・観光地を含めない</option>
-              </select>
-
-              <input type="search" name="keyword" placeholder="検索" value="<%= @keyword %>" class="input">
-              <input type="submit" value="🔎" class="btn btn-active bg-blue-700" data-api-type="google" />
-            </div>
-          </div>
+          <%= render 'shared/search_bar/sightseeing_search' %>
         </div>
     </div>
   </form>

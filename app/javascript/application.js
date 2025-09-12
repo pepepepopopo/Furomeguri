@@ -112,18 +112,10 @@ document.addEventListener('turbo:load', () => {
     // クリックされたsubmitボタンを取得
     const submitter = e.submitter;
     const apiType = submitter?.dataset?.apiType;
-    console.log('=== 検索処理開始 ===');
-    console.log('submitter:', submitter);
-    console.log('apiType:', apiType);
-    console.log('submitter.dataset:', submitter?.dataset);
 
     // FormData作成
     const formData = new FormData(form);
     const selectedLocation = formData.get("location");
-    console.log('FormData contents:');
-    for (let [key, value] of formData.entries()) {
-      console.log(`${key}: ${value}`);
-    }
     await setMapCenterToSelectedLocation(selectedLocation);
     clearSeedMarkers();
     clearSearchedMarkers();
@@ -131,9 +123,9 @@ document.addEventListener('turbo:load', () => {
     // API種別に応じて処理を分岐
     if (apiType == 'rakuten') {
       console.log('楽天API検索を実行');
+      console.log(formData)
       await rakutenHotelSearch(formData);
     } else if (apiType == "google") {
-      console.log('Google Places API検索を実行');
       await googlePlacesSearch(formData);
     }
   });
@@ -142,25 +134,23 @@ document.addEventListener('turbo:load', () => {
 // Google Maps API検索
 const googlePlacesSearch = async (formData) => {
   console.log('=== Google Places API検索処理開始 ===');
-  // api_typeパラメータを追加
-  formData.append('api_type', 'google');
-  const textQueryParams = new URLSearchParams(formData).toString();
-  console.log('params:', textQueryParams);
+  // FormDataを正しくURLSearchParamsに変換してapi_typeを追加
+  const searchParams = new URLSearchParams();
+  for (let [key, value] of formData.entries()) {
+    searchParams.append(key, value);
+  }
+  searchParams.append('api_type', 'google');
+  
+  console.log('検索パラメータ:', searchParams.toString());
   try {
-    console.log('リクエストURL:', `/maps/location_search?${textQueryParams}`);
-    const response = await fetch(`/maps/location_search?${textQueryParams}`, {
+    const response = await fetch(`/maps/location_search?${searchParams.toString()}`, {
       method: "GET",
       headers: { Accept: "application/json" }
     });
-    console.log('Response status:', response.status);
-    console.log('Response ok:', response.ok);
+
     if (!response.ok) throw new Error("通信に失敗しました");
     const data = await response.json();
-    console.log('Google API response:', data);
-    console.log('Response type:', typeof data);
-    console.log('Has places:', !!data?.places);
-    console.log('Places length:', data?.places?.length);
-    
+
     if (data && data.places && data.places.length > 0) {
       console.log('マーカーを設定します');
       setSearchMarkers(data.places);
@@ -178,12 +168,9 @@ const rakutenHotelSearch = async (formData) => {
   // FormDataをコピーしてapi_typeを追加
   const searchParams = new URLSearchParams();
   for (let [key, value] of formData.entries()) {
-    console.log(`Adding to searchParams: ${key} = ${value}`);
     searchParams.append(key, value);
   }
   searchParams.append('api_type', 'rakuten');
-  console.log('Final params string:', searchParams.toString());
-  console.log('URL will be:', `/maps/location_search?${searchParams.toString()}`);
 
   try {
     const response = await fetch(`/maps/location_search?${searchParams.toString()}`, {
@@ -192,7 +179,6 @@ const rakutenHotelSearch = async (formData) => {
     });
     if (!response.ok) throw new Error("通信に失敗しました");
     const data = await response.json();
-    console.log('Rakuten API response:', data);
     // 楽天API用のマーカー処理
     setRakutenMarkers(data.hotels || []);
   } catch (error) {
@@ -237,7 +223,6 @@ async function setRakutenMarkers(hotels) {
           }
         `);
         infoWindow.open(window.map, rakutenMarker);
-        
         // 情報ウィンドウが開かれた後にボタンのイベントリスナーを追加
         if (window.currentUserLoggedIn) {
           setTimeout(() => {

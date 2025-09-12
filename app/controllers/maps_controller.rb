@@ -14,6 +14,12 @@ class MapsController < ApplicationController
     @poi_type = params[:poi_type]
     @keyword = params[:keyword]
 
+    # デバッグログ
+    Rails.logger.info "=== MapsController#location_search ==="
+    Rails.logger.info "All params: #{params.inspect}"
+    Rails.logger.info "API Type: #{@api_type}"
+    Rails.logger.info "Location: #{@location}"
+
     # 絞り込み条件パラメータ
     @min_price = params[:min_price]
     @max_price = params[:max_price]
@@ -27,10 +33,15 @@ class MapsController < ApplicationController
 
     places = case @api_type
              when 'google'
+               Rails.logger.info "Google API branch selected"
                text_search(@location, @accommodation_type, @poi_type, @keyword)
              when 'rakuten'
+               Rails.logger.info "Rakuten API branch selected"
                raw_results = hotel_search(@location)
                filter_rakuten_results(raw_results)
+             else
+               Rails.logger.info "No API type matched, api_type: #{@api_type.inspect}"
+               { error: "Invalid or missing api_type parameter" }
              end
     render json: places
   end
@@ -54,12 +65,12 @@ class MapsController < ApplicationController
 
     # 宿泊施設タイプを追加
     if accommodation_type == "旅館・ホテル"
-      query_parts << "ホテル OR 旅館"
+      query_parts << "ホテル 旅館"
     end
 
     # 周辺施設タイプを追加
     if poi_type == "飲食・観光地"
-      query_parts << "レストラン OR 観光地"
+      query_parts << "レストラン 観光地"
     end
 
     # キーワードを追加
@@ -70,6 +81,17 @@ class MapsController < ApplicationController
 
     textquery_keyword = query_parts.compact.join(" ")
     textquery_keyword = location if textquery_keyword.blank?
+    
+    # デバッグログの追加
+    Rails.logger.info "=== Google Places API Request Debug ==="
+    Rails.logger.info "Location: #{location}"
+    Rails.logger.info "Accommodation type: #{accommodation_type}"
+    Rails.logger.info "POI type: #{poi_type}"
+    Rails.logger.info "Keyword: #{keyword}"
+    Rails.logger.info "Query parts: #{query_parts.inspect}"
+    Rails.logger.info "Final textquery_keyword: #{textquery_keyword}"
+    Rails.logger.info "Location data: lat=#{location_latitude}, lng=#{location_longitude}"
+    
     # リクエストボディの構築
     request_body = {
       textQuery: textquery_keyword,
@@ -85,6 +107,8 @@ class MapsController < ApplicationController
         }
       }
     }
+    
+    Rails.logger.info "Request body: #{request_body.to_json}"
 
     # HTTP POSTリクエストの作成
     http = Net::HTTP.new(uri.host, uri.port)
@@ -103,12 +127,20 @@ class MapsController < ApplicationController
     # リクエストの送信とレスポンスの処理
     response = http.request(request)
     response.body.force_encoding("UTF-8")
+    
+    Rails.logger.info "=== Google Places API Response ==="
+    Rails.logger.info "Response code: #{response.code}"
+    Rails.logger.info "Response body: #{response.body[0..1000]}..." # 最初の1000文字だけログ出力
 
     if response.code == "200"
-      JSON.parse(response.body)
-
+      parsed_response = JSON.parse(response.body)
+      Rails.logger.info "Parsed response keys: #{parsed_response.keys if parsed_response.is_a?(Hash)}"
+      Rails.logger.info "Places count: #{parsed_response.dig('places')&.length || 0}"
+      parsed_response
     else
       @error = "API request failed with status code: #{response.code}"
+      Rails.logger.error "API Error: #{@error}"
+      Rails.logger.error "Response body: #{response.body}"
       render json: { error: @error }, status: :internal_server_error
     end
   end
@@ -151,8 +183,8 @@ class MapsController < ApplicationController
     else
       { error: "Rakuten API request failed with status code: #{response.code}" }
     end
-  rescue StandardError => e
-    { error: "Rakuten API error: #{e.message}" }
+    rescue StandardError => e
+      { error: "Rakuten API error: #{e.message}" }
   end
 
   def sort_hotel_response(data); end
