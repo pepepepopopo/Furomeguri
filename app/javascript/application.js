@@ -122,7 +122,6 @@ document.addEventListener('turbo:load', () => {
 
     // API種別に応じて処理を分岐
     if (apiType == 'rakuten') {
-      console.log('楽天API検索を実行');
       console.log(formData)
       await rakutenHotelSearch(formData);
     } else if (apiType == "google") {
@@ -140,7 +139,7 @@ const googlePlacesSearch = async (formData) => {
     searchParams.append(key, value);
   }
   searchParams.append('api_type', 'google');
-  
+
   console.log('検索パラメータ:', searchParams.toString());
   try {
     const response = await fetch(`/maps/location_search?${searchParams.toString()}`, {
@@ -152,10 +151,9 @@ const googlePlacesSearch = async (formData) => {
     const data = await response.json();
 
     if (data && data.places && data.places.length > 0) {
-      console.log('マーカーを設定します');
       setSearchMarkers(data.places);
     } else {
-      console.log('検索結果が見つかりませんでした');
+      alert('検索結果が見つかりませんでした');
     }
   } catch (error) {
     console.error('Google Places API検索エラー:', error);

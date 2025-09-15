@@ -1,0 +1,30 @@
+<div class="tab-content bg-base-100 border-base-300 p-6">
+  <div class="flex justify-center">
+    <select name="accommodation_type" id="accommodation_type" class="select">
+      <option value="旅館・ホテル" selected>旅館・ホテル</option>
+      <option value="旅館・ホテルを含めない">旅館・ホテルを含めない</option>
+    </select>
+
+    <select name="poi_type" id="poi_type" class="select">
+      <option value="飲食・観光地" selected>飲食・観光地</option>
+      <option value="飲食・観光地を含めない" selected>飲食・観光地を含めない</option>
+    </select>
+    <div class="dropdown">
+      <div tabindex="0" role="button" class="btn btn-success whitespace-nowrap">こだわり条件</div>
+      <div tabindex="0" class="dropdown-content bg-base-100 rounded-box z-1 p-4 shadow-sm w-72 sm:w-80 md:w-130">
+        <div class="grid grid-cols-3 gap-2 mb-3">
+          <input class="btn" type="checkbox" name="源泉かけ流し" value="源泉かけ流し" aria-label="源泉かけ流し"/>
+          <input class="btn" type="checkbox" name="大浴場" value="大浴場" aria-label="大浴場"/>
+          <input class="btn" type="checkbox" name="サウナ" value="サウナ" aria-label="サウナ"/>
+          <input class="btn" type="checkbox" name="露天風呂" value="露天風呂" aria-label="露天風呂"/>
+          <input class="btn" type="checkbox" name="海が見える" value="海が見える" aria-label="海が見える"/>
+          <input class="btn" type="checkbox" name="貸し切り風呂" value="貸し切り風呂" aria-label="貸し切り風呂"/>
+          <input class="btn" type="checkbox" name="客室露天風呂" value="客室露天風呂" aria-label="客室露天風呂"/>
+        </div>
+        <input class="btn btn-error w-full" type="reset" value="リセット"/>
+      </div>
+    </div>
+    <input type="search" name="keyword" placeholder="検索" value="<%= @keyword %>" class="input">
+    <input type="submit" value="🔎" class="btn btn-active bg-blue-700" data-api-type="google" />
+  </div>
+</div>

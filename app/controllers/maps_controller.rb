@@ -14,12 +14,6 @@ class MapsController < ApplicationController
     @poi_type = params[:poi_type]
     @keyword = params[:keyword]
 
-    # デバッグログ
-    Rails.logger.info "=== MapsController#location_search ==="
-    Rails.logger.info "All params: #{params.inspect}"
-    Rails.logger.info "API Type: #{@api_type}"
-    Rails.logger.info "Location: #{@location}"
-
     # 絞り込み条件パラメータ
     @min_price = params[:min_price]
     @max_price = params[:max_price]
@@ -82,16 +76,6 @@ class MapsController < ApplicationController
     textquery_keyword = query_parts.compact.join(" ")
     textquery_keyword = location if textquery_keyword.blank?
 
-    # デバッグログの追加
-    Rails.logger.info "=== Google Places API Request Debug ==="
-    Rails.logger.info "Location: #{location}"
-    Rails.logger.info "Accommodation type: #{accommodation_type}"
-    Rails.logger.info "POI type: #{poi_type}"
-    Rails.logger.info "Keyword: #{keyword}"
-    Rails.logger.info "Query parts: #{query_parts.inspect}"
-    Rails.logger.info "Final textquery_keyword: #{textquery_keyword}"
-    Rails.logger.info "Location data: lat=#{location_latitude}, lng=#{location_longitude}"
-
     # リクエストボディの構築
     request_body = {
       textQuery: textquery_keyword,
@@ -107,8 +91,6 @@ class MapsController < ApplicationController
         }
       }
     }
-
-    Rails.logger.info "Request body: #{request_body.to_json}"
 
     # HTTP POSTリクエストの作成
     http = Net::HTTP.new(uri.host, uri.port)
@@ -128,19 +110,11 @@ class MapsController < ApplicationController
     response = http.request(request)
     response.body.force_encoding("UTF-8")
 
-    Rails.logger.info "=== Google Places API Response ==="
-    Rails.logger.info "Response code: #{response.code}"
-    Rails.logger.info "Response body: #{response.body[0..1000]}..." # 最初の1000文字だけログ出力
-
     if response.code == "200"
       parsed_response = JSON.parse(response.body)
-      Rails.logger.info "Parsed response keys: #{parsed_response.keys if parsed_response.is_a?(Hash)}"
-      Rails.logger.info "Places count: #{parsed_response.call('places')&.length || 0}"
       parsed_response
     else
       @error = "API request failed with status code: #{response.code}"
-      Rails.logger.error "API Error: #{@error}"
-      Rails.logger.error "Response body: #{response.body}"
       render json: { error: @error }, status: :internal_server_error
     end
   end
