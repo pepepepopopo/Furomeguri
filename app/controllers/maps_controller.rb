@@ -111,8 +111,8 @@ class MapsController < ApplicationController
     response.body.force_encoding("UTF-8")
 
     if response.code == "200"
-      parsed_response = JSON.parse(response.body)
-      parsed_response
+      JSON.parse(response.body)
+
     else
       @error = "API request failed with status code: #{response.code}"
       render json: { error: @error }, status: :internal_server_error
