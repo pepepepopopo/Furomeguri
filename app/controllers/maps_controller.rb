@@ -27,10 +27,15 @@ class MapsController < ApplicationController
 
     places = case @api_type
              when 'google'
+               Rails.logger.info "Google API branch selected"
                text_search(@location, @accommodation_type, @poi_type, @keyword)
              when 'rakuten'
+               Rails.logger.info "Rakuten API branch selected"
                raw_results = hotel_search(@location)
                filter_rakuten_results(raw_results)
+             else
+               Rails.logger.info "No API type matched, api_type: #{@api_type.inspect}"
+               { error: "Invalid or missing api_type parameter" }
              end
     render json: places
   end
@@ -54,12 +59,12 @@ class MapsController < ApplicationController
 
     # 宿泊施設タイプを追加
     if accommodation_type == "旅館・ホテル"
-      query_parts << "ホテル OR 旅館"
+      query_parts << "ホテル 旅館"
     end
 
     # 周辺施設タイプを追加
     if poi_type == "飲食・観光地"
-      query_parts << "レストラン OR 観光地"
+      query_parts << "レストラン 観光地"
     end
 
     # キーワードを追加
@@ -70,6 +75,7 @@ class MapsController < ApplicationController
 
     textquery_keyword = query_parts.compact.join(" ")
     textquery_keyword = location if textquery_keyword.blank?
+
     # リクエストボディの構築
     request_body = {
       textQuery: textquery_keyword,
