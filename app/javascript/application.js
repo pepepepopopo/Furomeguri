@@ -115,6 +115,8 @@ document.addEventListener('turbo:load', () => {
 
     // FormData作成
     const formData = new FormData(form);
+
+
     const selectedLocation = formData.get("location");
     await setMapCenterToSelectedLocation(selectedLocation);
     clearSeedMarkers();
@@ -141,6 +143,10 @@ const googlePlacesSearch = async (formData) => {
   searchParams.append('api_type', 'google');
 
   console.log('検索パラメータ:', searchParams.toString());
+  console.log('FormDataの内容:');
+  for (let [key, value] of formData.entries()) {
+    console.log(`  ${key}: ${value}`);
+  }
   try {
     const response = await fetch(`/maps/location_search?${searchParams.toString()}`, {
       method: "GET",
