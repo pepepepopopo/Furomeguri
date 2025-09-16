@@ -125,10 +125,10 @@ class MapsController < ApplicationController
 
     if response.code == "200"
       parsed_response = JSON.parse(response.body)
-      places_count = parsed_response.dig("places")&.length || 0
+      places_count = parsed_response.call("places")&.length || 0
       Rails.logger.info "=== API レスポンス成功 ==="
       Rails.logger.info "取得した場所数: #{places_count}"
-      if places_count > 0
+      if places_count.positive?
         Rails.logger.info "場所一覧:"
         parsed_response["places"]&.each_with_index do |place, index|
           name = place.dig("displayName", "text") || "名称未取得"
@@ -191,14 +191,14 @@ class MapsController < ApplicationController
 
   # API種別に応じたこだわり条件パラメータの抽出
   def extract_amenities_by_api_type(api_type, params)
-    case api_type
-    when 'google'
-      amenity_keys = ['城', '景観地', '公園']
-    when 'rakuten'
-      amenity_keys = ['源泉かけ流し', '大浴場', 'サウナ', '露天風呂', '海が見える', '貸し切り風呂', '客室露天風呂']
-    else
-      amenity_keys = []
-    end
+    amenity_keys = case api_type
+                   when 'google'
+                     ['城', '景観地', '公園']
+                   when 'rakuten'
+                     ['源泉かけ流し', '大浴場', 'サウナ', '露天風呂', '海が見える', '貸し切り風呂', '客室露天風呂']
+                   else
+                     []
+                   end
 
     selected_amenities = amenity_keys.select { |key| params[key].present? }
     Rails.logger.info "抽出されたこだわり条件: #{selected_amenities.inspect}"
