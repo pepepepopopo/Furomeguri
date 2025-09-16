@@ -10,14 +10,20 @@ class MapsController < ApplicationController
   def location_search
     @location = params[:location]
     @api_type = params[:api_type]
-    @accommodation_type = params[:accommodation_type]
-    @poi_type = params[:poi_type]
     @keyword = params[:keyword]
 
     # 絞り込み条件パラメータ
     @min_price = params[:min_price]
     @max_price = params[:max_price]
-    @amenities = extract_amenities(params)
+    @amenities = extract_amenities_by_api_type(@api_type, params)
+
+    # 検索パラメータのログ出力
+    Rails.logger.info "=== 検索パラメータ ==="
+    Rails.logger.info "温泉地: #{@location}"
+    Rails.logger.info "API種別: #{@api_type}"
+    Rails.logger.info "キーワード: #{@keyword}"
+    Rails.logger.info "こだわり条件: #{@amenities.inspect}"
+    Rails.logger.info "価格範囲: #{@min_price} - #{@max_price}"
 
     # locationパラメータの検証
     if @location.blank?
@@ -28,7 +34,7 @@ class MapsController < ApplicationController
     places = case @api_type
              when 'google'
                Rails.logger.info "Google API branch selected"
-               text_search(@location, @accommodation_type, @poi_type, @keyword)
+               text_search(@location, @keyword, @amenities)
              when 'rakuten'
                Rails.logger.info "Rakuten API branch selected"
                raw_results = hotel_search(@location)
@@ -43,7 +49,7 @@ class MapsController < ApplicationController
   private
 
   # google map apiでの検索
-  def text_search(location, accommodation_type, poi_type, keyword)
+  def text_search(location, keyword, amenities)
     api_key = ENV.fetch("GOOGLE_PLACE_API_KEY", nil)
     uri = URI.parse("https://places.googleapis.com/v1/places:searchText")
 
@@ -54,27 +60,26 @@ class MapsController < ApplicationController
     # 緯度・経度
     location_latitude = location_data.lat
     location_longitude = location_data.lng
-    # textQueryの構築
+
+    # textQueryの構築（keywordとamenitiesベース）
     query_parts = []
-
-    # 宿泊施設タイプを追加
-    if accommodation_type == "旅館・ホテル"
-      query_parts << "ホテル 旅館"
-    end
-
-    # 周辺施設タイプを追加
-    if poi_type == "飲食・観光地"
-      query_parts << "レストラン 観光地"
-    end
-
-    # キーワードを追加
-    query_parts << keyword if keyword.present?
 
     # 温泉地名を常に含める
     query_parts << location
 
+    # キーワードを追加
+    query_parts << keyword if keyword.present?
+
+    # こだわり条件を追加
+    amenities.each { |amenity| query_parts << amenity }
+
     textquery_keyword = query_parts.compact.join(" ")
     textquery_keyword = location if textquery_keyword.blank?
+
+    # 検索クエリのログ出力
+    Rails.logger.info "=== Google Places API検索クエリ ==="
+    Rails.logger.info "構築されたクエリパーツ: #{query_parts.inspect}"
+    Rails.logger.info "最終検索クエリ: '#{textquery_keyword}'"
 
     # リクエストボディの構築
     request_body = {
@@ -106,14 +111,35 @@ class MapsController < ApplicationController
 
     request.body = request_body.to_json
 
+    # リクエスト詳細のログ出力
+    Rails.logger.info "=== Google Places API リクエスト詳細 ==="
+    Rails.logger.info "URL: #{uri}"
+    Rails.logger.info "リクエストボディ: #{request_body.to_json}"
+    Rails.logger.info "ヘッダー: #{headers.inspect}"
+
     # リクエストの送信とレスポンスの処理
+    Rails.logger.info "=== API リクエスト送信中 ==="
     response = http.request(request)
+    Rails.logger.info "レスポンスコード: #{response.code}"
     response.body.force_encoding("UTF-8")
 
     if response.code == "200"
-      JSON.parse(response.body)
-
+      parsed_response = JSON.parse(response.body)
+      places_count = parsed_response.call("places")&.length || 0
+      Rails.logger.info "=== API レスポンス成功 ==="
+      Rails.logger.info "取得した場所数: #{places_count}"
+      if places_count.positive?
+        Rails.logger.info "場所一覧:"
+        parsed_response["places"]&.each_with_index do |place, index|
+          name = place.dig("displayName", "text") || "名称未取得"
+          Rails.logger.info "  #{index + 1}. #{name}"
+        end
+      end
+      parsed_response
     else
+      Rails.logger.error "=== API レスポンス失敗 ==="
+      Rails.logger.error "ステータスコード: #{response.code}"
+      Rails.logger.error "レスポンスボディ: #{response.body}"
       @error = "API request failed with status code: #{response.code}"
       render json: { error: @error }, status: :internal_server_error
     end
@@ -163,7 +189,23 @@ class MapsController < ApplicationController
 
   def sort_hotel_response(data); end
 
-  # こだわり条件パラメータの抽出
+  # API種別に応じたこだわり条件パラメータの抽出
+  def extract_amenities_by_api_type(api_type, params)
+    amenity_keys = case api_type
+                   when 'google'
+                     ['城', '景観地', '公園']
+                   when 'rakuten'
+                     ['源泉かけ流し', '大浴場', 'サウナ', '露天風呂', '海が見える', '貸し切り風呂', '客室露天風呂']
+                   else
+                     []
+                   end
+
+    selected_amenities = amenity_keys.select { |key| params[key].present? }
+    Rails.logger.info "抽出されたこだわり条件: #{selected_amenities.inspect}"
+    selected_amenities
+  end
+
+  # こだわり条件パラメータの抽出（楽天API用、後方互換性のため保持）
   def extract_amenities(params)
     amenity_keys = ['源泉かけ流し', '大浴場', 'サウナ', '露天風呂', '海が見える', '貸し切り風呂', '客室露天風呂']
     amenity_keys.select { |key| params[key].present? }
