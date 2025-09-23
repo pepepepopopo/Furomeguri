@@ -128,7 +128,7 @@ document.addEventListener('turbo:load', () => {
       await rakutenHotelSearch(formData);
     } else if (apiType == "google") {
       await googlePlacesSearch(formData);
-    } else {
+    } else if (apiType == "hotpepper") {
       await hotpepperSearch(formData);
     }
   });
@@ -192,22 +192,53 @@ const rakutenHotelSearch = async (formData) => {
 
 // hot pepper API検索
 const hotpepperSearch = async(formData) => {
-  console.log('=== hot pepper検索処理開始 ===')
+  console.log('=== HotPepper Food Search 処理開始 ===');
+  console.log('FormData内容:', [...formData.entries()]);
+
   const searchParams = new URLSearchParams();
   for (let [key, value] of formData.entries()) {
     searchParams.append(key, value);
   }
   searchParams.append('api_type', 'hotpepper');
 
+  console.log('検索パラメータ:', searchParams.toString());
+  console.log('リクエストURL:', `/maps/location_search?${searchParams.toString()}`);
+
   try {
+    console.log('APIリクエスト送信中...');
     const response = await fetch(`/maps/location_search?${searchParams.toString()}`,{
       method: "GET",
       headers: { Accept: "application/json"}
     });
-    if (!response.ok) throw new Error("通信に失敗しました");
+
+    console.log('レスポンス受信 - ステータス:', response.status);
+    console.log('レスポンス OK:', response.ok);
+
+    if (!response.ok) throw new Error(`通信に失敗しました - ステータス: ${response.status}`);
+
     const data = await response.json();
-  }catch(error){
-    alert('見つかりませんでした');
+    console.log('レスポンスデータ:', data);
+    console.log('データ構造:', Object.keys(data));
+
+    if (data.error) {
+      console.error('API エラー:', data.error);
+      alert(`エラー: ${data.error}`);
+      return;
+    }
+
+    if (data.results && data.results.shop && data.results.shop.length > 0) {
+      console.log(`店舗データ取得成功: ${data.results.shop.length}件`);
+      console.log('最初の店舗:', data.results.shop[0]);
+      // TODO: HotPepper用のマーカー設定関数を作成
+      setHotpepperMarkers(data.results.shop);
+    } else {
+      console.warn('店舗データが見つかりません');
+      alert('検索結果が見つかりませんでした');
+    }
+
+  } catch(error) {
+    console.error('HotPepper API検索エラー:', error);
+    alert(`検索エラー: ${error.message}`);
   }
 }
 
@@ -225,7 +256,7 @@ async function setRakutenMarkers(hotels) {
     if (lat && lng) {
       const rakutenMarker = new AdvancedMarkerElement({
         map: window.map,
-        position: { lat: parseFloat(lat), lng: parseFloat(lng) },
+        position: { lat: lat, lng: lng },
         title: name,
         content: new PinElement({ background: '#FF6B6B' }).element // 楽天用の色
       });
@@ -234,7 +265,7 @@ async function setRakutenMarkers(hotels) {
       rakutenMarker.addListener('gmp-click', () => {
         infoWindow.setContent(`
           <strong>${name}</strong><br>
-          <small>楽天トラベル</small>
+          <small>楽天トラベル</small><br>
           ${window.currentUserLoggedIn
             ? `<button id="add_itinerary_button"
                         data-place-id="${hotel.hotel?.[0]?.hotelBasicInfo?.hotelNo || ''}"
@@ -312,6 +343,57 @@ async function setSearchMarkers(places) {
     });
 
     searchMarkers.push(searchMarker);
+  });
+}
+
+// hot pepper API用マーカー作成
+async function setHotpepperMarkers(restaurants) {
+  if (!window.map) return;
+
+  const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary('marker');
+  const infoWindow = new google.maps.InfoWindow();
+
+  restaurants.forEach(restaurant => {
+    const lat = restaurant.lat;
+    const lng = restaurant.lng;
+    const name = restaurant.name;
+
+    const hotpepperMarker = new AdvancedMarkerElement({
+      map: window.map,
+      position: { lat, lng },
+      title: name,
+      content: new PinElement().element
+    });
+
+    hotpepperMarker.addListener('gmp-click', () => {
+      infoWindow.setContent(`
+        <strong>${name}</strong><br>
+        ${window.currentUserLoggedIn
+          ? `<button id="add_itinerary_button"
+                      data-place-id="${restaurant.id}"
+                      data-name="${name}"
+                      data-lat="${lat}"
+                      data-lng="${lng}"
+                      class="mt-2 px-3 py-1 bg-orange-400 text-white rounded-xs hover:bg-orange-500">
+            +旅程追加!
+          </button>`
+          : ''
+        }
+      `);
+      infoWindow.open(window.map, hotpepperMarker);
+
+      // 情報ウィンドウが開かれた後にボタンのイベントリスナーを追加
+      if (window.currentUserLoggedIn) {
+        setTimeout(() => {
+          const button = document.getElementById('add_itinerary_button');
+          if (button) {
+            button.addEventListener('click', handleAddItineraryClick);
+          }
+        }, 100);
+      }
+    });
+
+    searchMarkers.push(hotpepperMarker);
   });
 }
 
