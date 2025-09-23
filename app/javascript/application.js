@@ -128,6 +128,8 @@ document.addEventListener('turbo:load', () => {
       await rakutenHotelSearch(formData);
     } else if (apiType == "google") {
       await googlePlacesSearch(formData);
+    } else {
+      await hotpepperSearch(formData);
     }
   });
 });
@@ -144,9 +146,6 @@ const googlePlacesSearch = async (formData) => {
 
   console.log('検索パラメータ:', searchParams.toString());
   console.log('FormDataの内容:');
-  for (let [key, value] of formData.entries()) {
-    console.log(`  ${key}: ${value}`);
-  }
   try {
     const response = await fetch(`/maps/location_search?${searchParams.toString()}`, {
       method: "GET",
@@ -171,6 +170,7 @@ const rakutenHotelSearch = async (formData) => {
   console.log('=== 楽天トラベルAPI検索処理開始 ===');
   // FormDataをコピーしてapi_typeを追加
   const searchParams = new URLSearchParams();
+  // formDataにparamsを含める処理
   for (let [key, value] of formData.entries()) {
     searchParams.append(key, value);
   }
@@ -186,7 +186,28 @@ const rakutenHotelSearch = async (formData) => {
     // 楽天API用のマーカー処理
     setRakutenMarkers(data.hotels || []);
   } catch (error) {
-    console.error('楽天トラベルAPI検索エラー:', error);
+    alert('見つかりませんでした');
+  }
+}
+
+// hot pepper API検索
+const hotpepperSearch = async(formData) => {
+  console.log('=== hot pepper検索処理開始 ===')
+  const searchParams = new URLSearchParams();
+  for (let [key, value] of formData.entries()) {
+    searchParams.append(key, value);
+  }
+  searchParams.append('api_type', 'hotpepper');
+
+  try {
+    const response = await fetch(`/maps/location_search?${searchParams.toString()}`,{
+      method: "GET",
+      headers: { Accept: "application/json"}
+    });
+    if (!response.ok) throw new Error("通信に失敗しました");
+    const data = await response.json();
+  }catch(error){
+    alert('見つかりませんでした');
   }
 }
 
@@ -278,7 +299,7 @@ async function setSearchMarkers(places) {
         }
       `);
       infoWindow.open(window.map, searchMarker);
-      
+
       // 情報ウィンドウが開かれた後にボタンのイベントリスナーを追加
       if (window.currentUserLoggedIn) {
         setTimeout(() => {
