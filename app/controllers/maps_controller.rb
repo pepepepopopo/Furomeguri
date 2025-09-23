@@ -17,7 +17,6 @@ class MapsController < ApplicationController
     @max_price = params[:max_price]
     @amenities = extract_amenities_by_api_type(@api_type, params)
 
-
     # locationパラメータの検証
     if @location.blank?
       render json: { error: "Location parameter is required" }, status: :bad_request
@@ -26,12 +25,12 @@ class MapsController < ApplicationController
 
     places = case @api_type
              when 'google'
-              text_search(@location, @keyword, @amenities)
+               text_search(@location, @keyword, @amenities)
              when 'rakuten'
-              raw_results = hotel_search(@location)
-              filter_rakuten_results(raw_results)
+               raw_results = hotel_search(@location)
+               filter_rakuten_results(raw_results)
              when 'hotpepper'
-              food_search(location, keyword, amenities)
+               food_search(location, keyword, amenities)
              else
                { error: "Invalid or missing api_type parameter" }
              end
@@ -68,7 +67,6 @@ class MapsController < ApplicationController
     textquery_keyword = query_parts.compact.join(" ")
     textquery_keyword = location if textquery_keyword.blank?
 
-
     # リクエストボディの構築
     request_body = {
       textQuery: textquery_keyword,
@@ -104,8 +102,8 @@ class MapsController < ApplicationController
     response.body.force_encoding("UTF-8")
 
     if response.code == "200"
-      parsed_response = JSON.parse(response.body)
-      parsed_response
+      JSON.parse(response.body)
+
     else
       @error = "API request failed with status code: #{response.code}"
       render json: { error: @error }, status: :internal_server_error
@@ -164,11 +162,10 @@ class MapsController < ApplicationController
                    when 'rakuten'
                      ['源泉かけ流し', '大浴場', 'サウナ', '露天風呂', '海が見える', '貸し切り風呂', '客室露天風呂']
                    else
-                     ['lunch','parking','sake','shochu','wine','private_room']
+                     ['lunch', 'parking', 'sake', 'shochu', 'wine', 'private_room']
                    end
 
-    selected_amenities = amenity_keys.select { |key| params[key].present? }
-    selected_amenities
+    amenity_keys.select { |key| params[key].present? }
   end
 
   # 楽天トラベルAPI結果の絞り込み
@@ -223,7 +220,7 @@ class MapsController < ApplicationController
     end
   end
 
-  def food_search(location, keyword, amenities)
+  def food_search(location, keyword, _amenities)
     key = ENV.fetch("HOT_PEPPER_API_KEY")
     uri = URI.parse("http://webservice.recruit.co.jp/hotpepper/gourmet/v1/")
 
@@ -238,7 +235,7 @@ class MapsController < ApplicationController
       format: 'json',
       lat: location_latitude,
       lng: location_longitude,
-      range: 3,
+      range: 3
     }
 
     params[:genre] = genre if genre.present?
@@ -253,7 +250,7 @@ class MapsController < ApplicationController
     response = http.request(request)
 
     if response.code == "200"
-      data = JSON.parse(response.body)
+      JSON.parse(response.body)
       # Google Places APIと同様の形式に変換
 
     end
