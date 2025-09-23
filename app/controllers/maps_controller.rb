@@ -109,8 +109,8 @@ class MapsController < ApplicationController
       Rails.logger.info "レスポンス全体のキー: #{parsed_response.keys}"
 
       if parsed_response["places"]&.any?
-        Rails.logger.info "places配列の要素数: #{parsed_response["places"].length}"
-        Rails.logger.info "最初のplace要素の構造: #{parsed_response["places"][0].keys}"
+        Rails.logger.info "places配列の要素数: #{parsed_response['places'].length}"
+        Rails.logger.info "最初のplace要素の構造: #{parsed_response['places'][0].keys}"
         Rails.logger.info "最初のplace要素の詳細:"
         Rails.logger.info JSON.pretty_generate(parsed_response["places"][0])
       end
@@ -244,8 +244,8 @@ class MapsController < ApplicationController
       format: 'json',
       lat: location_data.lat,
       lng: location_data.lng,
-      range: 5,  # 検索範囲: 5=3km
-      count: 100,  # 取得件数を指定
+      range: 5, # 検索範囲: 5=3km
+      count: 100, # 取得件数を指定
       keyword: keyword,
       genre: params[:genre],
       budget: params[:budget],
