@@ -25,8 +25,7 @@
           <%= link_to '削除',
                       itinerary_itinerary_block_path(block.itinerary, block),
                       data: { turbo_method: :delete,
-                              turbo_stream: true,
-                              turbo_confirm: '削除しますか？' },
+                              turbo_stream: true},
                       class: 'btn btn-error text-xs px-2 py-1 min-h-0 h-6' %>
         </div>
       </div>

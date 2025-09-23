@@ -30,7 +30,7 @@ class MapsController < ApplicationController
                raw_results = hotel_search(@location)
                filter_rakuten_results(raw_results)
              when 'hotpepper'
-               food_search(location, keyword, amenities)
+               food_search(@location, @keyword, @amenities)
              else
                { error: "Invalid or missing api_type parameter" }
              end
@@ -102,7 +102,22 @@ class MapsController < ApplicationController
     response.body.force_encoding("UTF-8")
 
     if response.code == "200"
-      JSON.parse(response.body)
+      parsed_response = JSON.parse(response.body)
+
+      # Google Maps APIレスポンス構造をログ出力
+      Rails.logger.info "=== Google Maps API レスポンス構造 ==="
+      Rails.logger.info "レスポンス全体のキー: #{parsed_response.keys}"
+
+      if parsed_response["places"]&.any?
+        Rails.logger.info "places配列の要素数: #{parsed_response["places"].length}"
+        Rails.logger.info "最初のplace要素の構造: #{parsed_response["places"][0].keys}"
+        Rails.logger.info "最初のplace要素の詳細:"
+        Rails.logger.info JSON.pretty_generate(parsed_response["places"][0])
+      end
+
+      Rails.logger.info "==============================="
+
+      parsed_response
 
     else
       @error = "API request failed with status code: #{response.code}"
@@ -135,7 +150,7 @@ class MapsController < ApplicationController
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
 
-    request = Net::HTTP::GET.new(uri)
+    request = Net::HTTP::Get.new(uri)
     response = http.request(request)
 
     if response.code == "200"
@@ -151,8 +166,6 @@ class MapsController < ApplicationController
   rescue StandardError => e
     { error: "Rakuten API error: #{e.message}" }
   end
-
-  def sort_hotel_response(data); end
 
   # API種別に応じたこだわり条件パラメータの抽出
   def extract_amenities_by_api_type(api_type, params)
@@ -220,15 +233,24 @@ class MapsController < ApplicationController
     end
   end
 
-  def food_search(location, keyword, _amenities)
+  def food_search(location, keyword, amenities)
+    Rails.logger.info "=== HotPepper Food Search 開始 ==="
+    Rails.logger.info "パラメータ - location: #{location}, keyword: #{keyword}"
+
     key = ENV.fetch("HOT_PEPPER_API_KEY")
-    uri = URI.parse("http://webservice.recruit.co.jp/hotpepper/gourmet/v1/")
+    Rails.logger.info "API Key取得: #{key.present? ? 'OK' : 'NG'}"
+
+    uri = URI.parse("https://webservice.recruit.co.jp/hotpepper/gourmet/v1/")
 
     location_data = DefaultLocation.find_by(name: location)
-    return { error: "Location not found" } unless location_data
+    unless location_data
+      Rails.logger.error "Location not found: #{location}"
+      return { error: "Location not found" }
+    end
 
     location_latitude = location_data.lat
     location_longitude = location_data.lng
+    Rails.logger.info "座標取得 - lat: #{location_latitude}, lng: #{location_longitude}"
 
     params = {
       key: key,
@@ -238,21 +260,46 @@ class MapsController < ApplicationController
       range: 3
     }
 
-    params[:genre] = genre if genre.present?
     params[:keyword] = keyword if keyword.present?
+    Rails.logger.info "リクエストパラメータ: #{params}"
 
     uri.query = URI.encode_www_form(params)
+    Rails.logger.info "完成URL: #{uri}"
 
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
 
-    request = Net::HTTP::GET.new(uri)
+    request = Net::HTTP::Get.new(uri)
+    Rails.logger.info "APIリクエスト送信中..."
+
     response = http.request(request)
+    Rails.logger.info "レスポンス受信 - ステータス: #{response.code}"
 
     if response.code == "200"
-      JSON.parse(response.body)
-      # Google Places APIと同様の形式に変換
+      parsed_data = JSON.parse(response.body)
+      Rails.logger.info "レスポンス解析成功"
+      Rails.logger.info "レスポンス構造: #{parsed_data.keys}"
 
+      if parsed_data['results']
+        if parsed_data['results']['shop']
+          shop_count = parsed_data['results']['shop'].length
+          Rails.logger.info "店舗データ取得成功: #{shop_count}件"
+        else
+          Rails.logger.warn "店舗データなし"
+        end
+      else
+        Rails.logger.warn "resultsキーが存在しません"
+      end
+
+      parsed_data
+    else
+      Rails.logger.error "APIエラー - ステータス: #{response.code}"
+      Rails.logger.error "エラー内容: #{response.body}"
+      { error: "HotPepper API request failed with status code: #{response.code}" }
     end
+  rescue StandardError => e
+    Rails.logger.error "例外発生: #{e.message}"
+    Rails.logger.error e.backtrace.join("\n")
+    { error: "HotPepper API error: #{e.message}" }
   end
 end
