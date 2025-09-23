@@ -10,7 +10,7 @@ class MapsController < ApplicationController
   def location_search
     @location = params[:location]
     @api_type = params[:api_type]
-    @keyword = params[:keyword]
+    @keyword = params[:food_keyword] || params[:hotel_keyword] || params[:sightseeing_keyword] || params[:keyword]
 
     # 絞り込み条件パラメータ
     @min_price = params[:min_price]
@@ -30,7 +30,7 @@ class MapsController < ApplicationController
                raw_results = hotel_search(@location)
                filter_rakuten_results(raw_results)
              when 'hotpepper'
-               food_search(@location, @keyword, @amenities)
+               food_search(@location, @keyword, params)
              else
                { error: "Invalid or missing api_type parameter" }
              end
@@ -174,8 +174,10 @@ class MapsController < ApplicationController
                      ['城', '景観地', '公園']
                    when 'rakuten'
                      ['源泉かけ流し', '大浴場', 'サウナ', '露天風呂', '海が見える', '貸し切り風呂', '客室露天風呂']
-                   else
+                   when 'hotpepper'
                      ['lunch', 'parking', 'sake', 'shochu', 'wine', 'private_room']
+                   else
+                     []
                    end
 
     amenity_keys.select { |key| params[key].present? }
@@ -233,45 +235,39 @@ class MapsController < ApplicationController
     end
   end
 
-  def food_search(location, keyword, amenities)
-    Rails.logger.info "=== HotPepper Food Search 開始 ==="
-    Rails.logger.info "パラメータ - location: #{location}, keyword: #{keyword}"
+  def food_search(location, keyword, params)
+    location_data = DefaultLocation.find_by(name: location)
+    return { error: "Location not found" } unless location_data
 
-    key = ENV.fetch("HOT_PEPPER_API_KEY")
-    Rails.logger.info "API Key取得: #{key.present? ? 'OK' : 'NG'}"
+    api_params = {
+      key: ENV.fetch("HOT_PEPPER_API_KEY"),
+      format: 'json',
+      lat: location_data.lat,
+      lng: location_data.lng,
+      range: 5,  # 検索範囲: 5=3km
+      count: 100,  # 取得件数を指定
+      keyword: keyword,
+      genre: params[:genre],
+      budget: params[:budget],
+      lunch: params[:lunch],
+      parking: params[:parking],
+      sake: params[:sake],
+      shochu: params[:shochu],
+      wine: params[:wine],
+      private_room: params[:private_room]
+    }.compact
 
     uri = URI.parse("https://webservice.recruit.co.jp/hotpepper/gourmet/v1/")
+    uri.query = URI.encode_www_form(api_params)
 
-    location_data = DefaultLocation.find_by(name: location)
-    unless location_data
-      Rails.logger.error "Location not found: #{location}"
-      return { error: "Location not found" }
-    end
-
-    location_latitude = location_data.lat
-    location_longitude = location_data.lng
-    Rails.logger.info "座標取得 - lat: #{location_latitude}, lng: #{location_longitude}"
-
-    params = {
-      key: key,
-      format: 'json',
-      lat: location_latitude,
-      lng: location_longitude,
-      range: 3
-    }
-
-    params[:keyword] = keyword if keyword.present?
-    Rails.logger.info "リクエストパラメータ: #{params}"
-
-    uri.query = URI.encode_www_form(params)
-    Rails.logger.info "完成URL: #{uri}"
+    Rails.logger.info "=== HotPepper API リクエスト詳細 ==="
+    Rails.logger.info "URL: #{uri}"
+    Rails.logger.info "パラメータ: #{api_params}"
 
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
 
     request = Net::HTTP::Get.new(uri)
-    Rails.logger.info "APIリクエスト送信中..."
-
     response = http.request(request)
     Rails.logger.info "レスポンス受信 - ステータス: #{response.code}"
 
@@ -281,14 +277,24 @@ class MapsController < ApplicationController
       Rails.logger.info "レスポンス構造: #{parsed_data.keys}"
 
       if parsed_data['results']
+        # APIから返された総件数を確認
+        if parsed_data['results']['results_available']
+          Rails.logger.info "検索結果総数: #{parsed_data['results']['results_available']}件"
+        end
+
+        if parsed_data['results']['results_returned']
+          Rails.logger.info "今回取得件数: #{parsed_data['results']['results_returned']}件"
+        end
+
         if parsed_data['results']['shop']
           shop_count = parsed_data['results']['shop'].length
-          Rails.logger.info "店舗データ取得成功: #{shop_count}件"
+          Rails.logger.info "店舗データ配列長: #{shop_count}件"
         else
           Rails.logger.warn "店舗データなし"
         end
       else
         Rails.logger.warn "resultsキーが存在しません"
+        Rails.logger.warn "レスポンス全体: #{parsed_data}"
       end
 
       parsed_data
