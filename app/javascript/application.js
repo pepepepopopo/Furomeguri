@@ -47,7 +47,7 @@ window.initMap = async function () {
 
     await setDefaultMarker();
   } catch (error) {
-    console.error('Error initializing map:', error);
+    // Error initializing map
   }
 };
 
@@ -124,7 +124,6 @@ document.addEventListener('turbo:load', () => {
 
     // API種別に応じて処理を分岐
     if (apiType == 'rakuten') {
-      console.log(formData)
       await rakutenHotelSearch(formData);
     } else if (apiType == "google") {
       await googlePlacesSearch(formData);
@@ -136,7 +135,6 @@ document.addEventListener('turbo:load', () => {
 
 // Google Maps API検索
 const googlePlacesSearch = async (formData) => {
-  console.log('=== Google Places API検索処理開始 ===');
   // FormDataを正しくURLSearchParamsに変換してapi_typeを追加
   const searchParams = new URLSearchParams();
   for (let [key, value] of formData.entries()) {
@@ -144,8 +142,6 @@ const googlePlacesSearch = async (formData) => {
   }
   searchParams.append('api_type', 'google');
 
-  console.log('検索パラメータ:', searchParams.toString());
-  console.log('FormDataの内容:');
   try {
     const response = await fetch(`/maps/location_search?${searchParams.toString()}`, {
       method: "GET",
@@ -161,13 +157,12 @@ const googlePlacesSearch = async (formData) => {
       alert('検索結果が見つかりませんでした');
     }
   } catch (error) {
-    console.error('Google Places API検索エラー:', error);
+    // Google Places API検索エラー
   }
 }
 
 // 楽天トラベルAPI検索
 const rakutenHotelSearch = async (formData) => {
-  console.log('=== 楽天トラベルAPI検索処理開始 ===');
   // FormDataをコピーしてapi_typeを追加
   const searchParams = new URLSearchParams();
   // formDataにparamsを含める処理
@@ -192,8 +187,6 @@ const rakutenHotelSearch = async (formData) => {
 
 // hot pepper API検索
 const hotpepperSearch = async(formData) => {
-  console.log('=== HotPepper Food Search 処理開始 ===');
-  console.log('FormData内容:', [...formData.entries()]);
 
   const searchParams = new URLSearchParams();
   for (let [key, value] of formData.entries()) {
@@ -201,43 +194,34 @@ const hotpepperSearch = async(formData) => {
   }
   searchParams.append('api_type', 'hotpepper');
 
-  console.log('検索パラメータ:', searchParams.toString());
-  console.log('リクエストURL:', `/maps/location_search?${searchParams.toString()}`);
 
   try {
-    console.log('APIリクエスト送信中...');
     const response = await fetch(`/maps/location_search?${searchParams.toString()}`,{
       method: "GET",
       headers: { Accept: "application/json"}
     });
 
-    console.log('レスポンス受信 - ステータス:', response.status);
-    console.log('レスポンス OK:', response.ok);
 
     if (!response.ok) throw new Error(`通信に失敗しました - ステータス: ${response.status}`);
 
     const data = await response.json();
-    console.log('レスポンスデータ:', data);
-    console.log('データ構造:', Object.keys(data));
 
     if (data.error) {
-      console.error('API エラー:', data.error);
+      // API エラー
       alert(`エラー: ${data.error}`);
       return;
     }
 
     if (data.results && data.results.shop && data.results.shop.length > 0) {
-      console.log(`店舗データ取得成功: ${data.results.shop.length}件`);
-      console.log('最初の店舗:', data.results.shop[0]);
       // TODO: HotPepper用のマーカー設定関数を作成
       setHotpepperMarkers(data.results.shop);
     } else {
-      console.warn('店舗データが見つかりません');
+      // 店舗データが見つかりません
       alert('検索結果が見つかりませんでした');
     }
 
   } catch(error) {
-    console.error('HotPepper API検索エラー:', error);
+    // HotPepper API検索エラー
     alert(`検索エラー: ${error.message}`);
   }
 }
