@@ -102,9 +102,7 @@ class MapsController < ApplicationController
     response.body.force_encoding("UTF-8")
 
     if response.code == "200"
-      parsed_response = JSON.parse(response.body)
-
-      parsed_response
+      JSON.parse(response.body)
 
     else
       @error = "API request failed with status code: #{response.code}"
@@ -222,6 +220,7 @@ class MapsController < ApplicationController
     end
   end
 
+  # hotPepperでの検索
   def food_search(location, keyword, params)
     location_data = DefaultLocation.find_by(name: location)
     return { error: "Location not found" } unless location_data
@@ -247,7 +246,6 @@ class MapsController < ApplicationController
     uri = URI.parse("https://webservice.recruit.co.jp/hotpepper/gourmet/v1/")
     uri.query = URI.encode_www_form(api_params)
 
-
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
 
@@ -255,15 +253,7 @@ class MapsController < ApplicationController
     response = http.request(request)
 
     if response.code == "200"
-      parsed_data = JSON.parse(response.body)
-
-      if parsed_data['results']
-        # APIから返されたデータをチェック
-      else
-        # resultsキーが存在しません
-      end
-
-      parsed_data
+      JSON.parse(response.body)
     else
       # APIエラー
       { error: "HotPepper API request failed with status code: #{response.code}" }
