@@ -102,22 +102,7 @@ class MapsController < ApplicationController
     response.body.force_encoding("UTF-8")
 
     if response.code == "200"
-      parsed_response = JSON.parse(response.body)
-
-      # Google Maps APIレスポンス構造をログ出力
-      Rails.logger.info "=== Google Maps API レスポンス構造 ==="
-      Rails.logger.info "レスポンス全体のキー: #{parsed_response.keys}"
-
-      if parsed_response["places"]&.any?
-        Rails.logger.info "places配列の要素数: #{parsed_response['places'].length}"
-        Rails.logger.info "最初のplace要素の構造: #{parsed_response['places'][0].keys}"
-        Rails.logger.info "最初のplace要素の詳細:"
-        Rails.logger.info JSON.pretty_generate(parsed_response["places"][0])
-      end
-
-      Rails.logger.info "==============================="
-
-      parsed_response
+      JSON.parse(response.body)
 
     else
       @error = "API request failed with status code: #{response.code}"
@@ -235,6 +220,7 @@ class MapsController < ApplicationController
     end
   end
 
+  # hotPepperでの検索
   def food_search(location, keyword, params)
     location_data = DefaultLocation.find_by(name: location)
     return { error: "Location not found" } unless location_data
@@ -260,52 +246,20 @@ class MapsController < ApplicationController
     uri = URI.parse("https://webservice.recruit.co.jp/hotpepper/gourmet/v1/")
     uri.query = URI.encode_www_form(api_params)
 
-    Rails.logger.info "=== HotPepper API リクエスト詳細 ==="
-    Rails.logger.info "URL: #{uri}"
-    Rails.logger.info "パラメータ: #{api_params}"
-
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
 
     request = Net::HTTP::Get.new(uri)
     response = http.request(request)
-    Rails.logger.info "レスポンス受信 - ステータス: #{response.code}"
 
     if response.code == "200"
-      parsed_data = JSON.parse(response.body)
-      Rails.logger.info "レスポンス解析成功"
-      Rails.logger.info "レスポンス構造: #{parsed_data.keys}"
-
-      if parsed_data['results']
-        # APIから返された総件数を確認
-        if parsed_data['results']['results_available']
-          Rails.logger.info "検索結果総数: #{parsed_data['results']['results_available']}件"
-        end
-
-        if parsed_data['results']['results_returned']
-          Rails.logger.info "今回取得件数: #{parsed_data['results']['results_returned']}件"
-        end
-
-        if parsed_data['results']['shop']
-          shop_count = parsed_data['results']['shop'].length
-          Rails.logger.info "店舗データ配列長: #{shop_count}件"
-        else
-          Rails.logger.warn "店舗データなし"
-        end
-      else
-        Rails.logger.warn "resultsキーが存在しません"
-        Rails.logger.warn "レスポンス全体: #{parsed_data}"
-      end
-
-      parsed_data
+      JSON.parse(response.body)
     else
-      Rails.logger.error "APIエラー - ステータス: #{response.code}"
-      Rails.logger.error "エラー内容: #{response.body}"
+      # APIエラー
       { error: "HotPepper API request failed with status code: #{response.code}" }
     end
   rescue StandardError => e
-    Rails.logger.error "例外発生: #{e.message}"
-    Rails.logger.error e.backtrace.join("\n")
+    # HotPepper API例外発生
     { error: "HotPepper API error: #{e.message}" }
   end
 end
