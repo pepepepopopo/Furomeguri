@@ -53,7 +53,7 @@ class MapsController < ApplicationController
     location_longitude = location_data.lng
 
     # textQueryの構築（keywordとamenitiesベース）
-    query_parts = []
+    query_parts = ['観光']
 
     # 温泉地名を常に含める
     query_parts << location
@@ -171,7 +171,7 @@ class MapsController < ApplicationController
   def extract_amenities_by_api_type(api_type, params)
     amenity_keys = case api_type
                    when 'google'
-                     ['城', '景観地', '公園']
+                     ['城', '景観地', '公園', '博物館', '美術館']
                    when 'rakuten'
                      ['源泉かけ流し', '大浴場', 'サウナ', '露天風呂', '海が見える', '貸し切り風呂', '客室露天風呂']
                    when 'hotpepper'
