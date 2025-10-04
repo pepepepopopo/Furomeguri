@@ -1,3 +1,6 @@
+![ogp (1)](https://github.com/user-attachments/assets/345087e7-6b13-4184-87ea-2908494eefe5)
+
+
 ◽️画面遷移図リンク
 Figma：https://www.figma.com/design/6uGxQ5lEgW61YQVW6O0t5u/Furomeguri?node-id=0-1&t=xkYWUInvvAzlEafK-1
 
