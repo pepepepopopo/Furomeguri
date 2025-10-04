@@ -1,15 +1,19 @@
+# ■プロジェクト名：[風呂めぐり](https://furomeguri-1.onrender.com)
 ![ogp (1)](https://github.com/user-attachments/assets/345087e7-6b13-4184-87ea-2908494eefe5)
 
+# ■目次
+- 
 
-◽️画面遷移図リンク
-Figma：https://www.figma.com/design/6uGxQ5lEgW61YQVW6O0t5u/Furomeguri?node-id=0-1&t=xkYWUInvvAzlEafK-1
+# ■使用技術
 
-◽️画面遷移図リンク
-https://gyazo.com/60109cc78abf5cf2d087ea4f5906e187
-
-■サービス概要
+# ■サービス概要
 Furomeguriは温泉旅行に特化した行先選定と旅程作成が可能な旅行アプリです。
 ユーザーは温泉施設、周辺施設を比較し、旅程をたてることができます。
+## サービスURL：https://furomeguri-1.onrender.com  
+
+・ゲストユーザー  
+【メールアドレス】furomeguri-test-1@example.com  
+【パスワード」password  
 
 ■ このサービスへの思い・作りたい理由
 私は旅行する時必ず温泉がある場所を選んだり、毎週温泉に行くほどの温泉好きです。
