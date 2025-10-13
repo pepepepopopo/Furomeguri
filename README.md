@@ -11,10 +11,10 @@ Furomeguriは温泉旅行に特化した行先選定と旅程作成が可能な�
 # 🔧使用技術
 | **カテゴリ** | **技術内容** |
 | --- | --- |
-| サーバーサイド  | Content  |
-| フロントエンド  | Content  |
+| サーバーサイド  | ruby 3.2.3・Ruby on Rails 7.2.1  |
+| フロントエンド  | Ruby on Rails・JavaScript  |
 | CSSフレームワーク  | Tailwindcss + daisyUI  |
-| Web API  | Content  |
+| 外部 API  | Google map API・Rakuten travel API・リクルートWEBサービス  |
 | データベースサーバー  | PostgreSQL  |
 | アプリケーションサーバー  | Render  |
 | バージョン管理ツール  | Git  |
